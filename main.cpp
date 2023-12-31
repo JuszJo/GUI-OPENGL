@@ -28,22 +28,8 @@ int main() {
     ImGui::CreateContext();
     ImGuiIO &io = ImGui::GetIO(); (void)io;
     ImGui_ImplGlfw_InitForOpenGL(window, true);
-
     ImGui_ImplOpenGL3_Init("#version 330");
     ImGui::StyleColorsDark();
-
-    
-
-
-    // Setup Dear ImGui context
-    // IMGUI_CHECKVERSION();
-    // ImGui::CreateContext();
-    // ImGuiIO &io = ImGui::GetIO();
-    // // Setup Platform/Renderer bindings
-    // ImGui_ImplGlfw_InitForOpenGL(window, true);
-    // ImGui_ImplOpenGL3_Init(glsl_version);
-    // // Setup Dear ImGui style
-    // ImGui::StyleColorsDark();
 
     Shader shader("shaders/vertexShader.glsl", "shaders/fragmentShader.glsl");
 
@@ -89,16 +75,19 @@ int main() {
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        // rendering our geometries
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
-        // glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
-        // glBindVertexArray(0);
 
         // render your GUI
         ImGui::Begin("Demo window");
         ImGui::Button("Hello!");
+        static float color[4] = { 1.0f,1.0f,1.0f,1.0f };
+        // color picker
+        ImGui::ColorEdit3("color", color);
         ImGui::End();
+
+        int colorLocation = glGetUniformLocation(shader.shaderProgram, "color");
+        glUniform3f(colorLocation, color[0], color[1], color[2]);
 
         // Render dear imgui into screen
         ImGui::Render();

@@ -7,7 +7,7 @@
 #include "libs/shader.h"
 
 #include "src/square.h"
-#include "src/menu.h"
+#include "src/button.h"
 
 int main() {
     if (!glfwInit()) return 1;
@@ -29,7 +29,7 @@ int main() {
     Shader shader("shaders/vertexShader.glsl", "shaders/fragmentShader.glsl");
     Shader menuShader("shaders/menu/menuVertexShader.glsl", "shaders/menu/menuFragmentShader.glsl");
     Square square;
-    Menu menu;
+    Button button;
 
     glm::mat4 projection = glm::mat4(1.0f);
 
@@ -47,8 +47,8 @@ int main() {
         // square.render();
 
         menuShader.use();
-        menu.setProjection(&menuShader, projection);
-        menu.render();
+        button.setProjection(&menuShader, projection);
+        button.render();
         
         glfwSwapBuffers(window);
     }

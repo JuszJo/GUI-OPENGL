@@ -1,5 +1,5 @@
-#ifndef MENU_H
-#define MENU_H
+#ifndef BUTTON_H
+#define BUTTON_H
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -8,7 +8,7 @@
 
 #include "entity.h"
 
-class Menu: public Entity {
+class Button: public Entity {
     private:
         int stride = 5;
 
@@ -20,7 +20,7 @@ class Menu: public Entity {
             50.0f, 50.0f, 0.0f, 1.0f, 0.0f
         };
 
-        Menu() {
+        Button() {
             genVertexandBuffers(&VAO, &VBO);
             bindVAO(VAO);
 

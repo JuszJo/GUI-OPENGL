@@ -13,17 +13,19 @@ class Button: public Entity {
         int stride = 5;
 
     public:
-        float width = 50.0f;
-        float height = 30.0f;
+        float buttonWidth;
+        float buttonHeight;
 
-        float vertices[20] = {
-            0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-            width, 0.0f, 0.0f, 1.0f, 1.0f,
-            0.0f, height, 0.0f, 0.0f, 0.0f,
-            width, height, 0.0f, 1.0f, 0.0f
-        };
+        Button(char* texturePath, float width, float height) {
+            buttonWidth = width;
+            buttonHeight = height;
 
-        Button() {
+            float vertices[20] = {
+                0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+                width, 0.0f, 0.0f, 1.0f, 1.0f,
+                0.0f, height, 0.0f, 0.0f, 0.0f,
+                width, height, 0.0f, 1.0f, 0.0f
+            };
             genVertexandBuffers(&VAO, &VBO);
             bindVAO(VAO);
 
@@ -35,7 +37,7 @@ class Button: public Entity {
 
             cleanupBuffers();
 
-            loadImage((char*)"src\\assets\\playbutton.png");
+            loadImage(texturePath);
         }
 
         void render() {

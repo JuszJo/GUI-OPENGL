@@ -7,6 +7,7 @@
 #include "libs/shader.h"
 
 #include "src/square.h"
+#include "src/menu.h"
 
 int main() {
     if (!glfwInit()) return 1;
@@ -28,22 +29,27 @@ int main() {
     Shader shader("shaders/vertexShader.glsl", "shaders/fragmentShader.glsl");
     Shader menuShader("shaders/menu/menuVertexShader.glsl", "shaders/menu/menuFragmentShader.glsl");
     Square square;
+    Menu menu;
 
-    bool showDemo = false;
+    glm::mat4 projection = glm::mat4(1.0f);
 
     while (!glfwWindowShouldClose(window)) {
+        glfwGetFramebufferSize(window, &display_w, &display_h);
+        glViewport(0, 0, display_w, display_h);
+        projection = glm::ortho(0.0f, (float)display_w, 0.0f, (float)display_h, -1.0f, 1.0f);
+
         glfwPollEvents();
         glClearColor(0.45f, 0.55f, 0.60f, 1.00f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        shader.use();
-
-        square.render();
+        // shader.use();
+        // square.setProjection(&shader, projection);
+        // square.render();
 
         menuShader.use();
-
-        glfwGetFramebufferSize(window, &display_w, &display_h);
-        glViewport(0, 0, display_w, display_h);
+        menu.setProjection(&menuShader, projection);
+        menu.render();
+        
         glfwSwapBuffers(window);
     }
 

@@ -14,7 +14,12 @@
 class Entity {
     public:
         unsigned int VAO, VBO, EBO, TBO;
-        glm::mat4 model = glm::mat4(1.0f);
+        glm::mat4 model = glm::mat4(1.0f);    
+
+        void setProjection(Shader* shader, glm::mat4 projection) {
+            int location = glGetUniformLocation(shader -> shaderProgram, "projection");
+            glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(projection));
+        }
 
         void setUniformVec3f(Shader* shader, char* name, float val1, float val2, float val3) {
             int colorLocation = glGetUniformLocation(shader -> shaderProgram, name);

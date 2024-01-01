@@ -13,11 +13,14 @@ class Button: public Entity {
         int stride = 5;
 
     public:
+        float width = 50.0f;
+        float height = 30.0f;
+
         float vertices[20] = {
             0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-            50.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-            0.0f, 50.0f, 0.0f, 0.0f, 0.0f,
-            50.0f, 50.0f, 0.0f, 1.0f, 0.0f
+            width, 0.0f, 0.0f, 1.0f, 1.0f,
+            0.0f, height, 0.0f, 0.0f, 0.0f,
+            width, height, 0.0f, 1.0f, 0.0f
         };
 
         Button() {

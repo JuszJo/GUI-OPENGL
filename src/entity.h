@@ -7,11 +7,13 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "../libs/stb_image.h"
+
 #include "../libs/shader.h"
 
 class Entity {
     public:
-        unsigned int VAO, VBO, EBO;
+        unsigned int VAO, VBO, EBO, TBO;
         glm::mat4 model = glm::mat4(1.0f);
 
         void setUniformVec3f(Shader* shader, char* name, float val1, float val2, float val3) {
@@ -51,6 +53,39 @@ class Entity {
         void handleVertexArrayObject(int location, int nComponents, int stride, int offset) {
             glVertexAttribPointer(location, nComponents, GL_FLOAT, GL_FALSE, stride * sizeof(float), offset == 0 ? nullptr : (void*)(offset * sizeof(float)));
             glEnableVertexAttribArray(location);
+        }
+
+        void loadImage(char* path) {
+            int width, height, nChannels;
+
+            stbi_uc* imageData = stbi_load(path, &width, &height, &nChannels, 0);
+
+            if(!imageData) {
+                const char* reason = stbi_failure_reason();
+
+                std::cout << reason << std::endl;
+            }
+
+            glGenTextures(1, &TBO);
+            glBindTexture(GL_TEXTURE_2D, TBO);
+
+            // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            if(nChannels > 3) {
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
+            }
+            else {
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, imageData);
+            }
+
+            glGenerateMipmap(GL_TEXTURE_2D);
+
+            stbi_image_free(imageData);
         }
 
         void cleanupBuffers() {

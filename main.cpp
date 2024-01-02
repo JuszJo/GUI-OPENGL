@@ -31,7 +31,7 @@ int main() {
     Shader menuShader("shaders/menu/menuVertexShader.glsl", "shaders/menu/menuFragmentShader.glsl");
     Square square;
     // Button button((char*)"src\\assets\\playbutton.png", 50.0f, 30.0f, 0.0f, 0.0f);
-    Menu menu;
+    Menu menu(&display_w, &display_h);
 
     menu.addButton((char*)"src\\assets\\playbutton.png", 100.0f, 50.0f, 50.0f, 25.0f);
 

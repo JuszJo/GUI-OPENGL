@@ -16,12 +16,17 @@ class Menu {
         
 
     public:
+        int* display_w;
+        int* display_h;
         double cursor_position_x, cursor_position_y;
 
         Button buttons[4];
         int currentButtonIndex = 0;
 
-        Menu() {}
+        Menu(int* display_width, int* display_height) {
+            display_w = display_width;
+            display_h = display_height;
+        }
 
         void addButton(char* texturePath, float width, float height, float x, float y) {
             Button newButton(texturePath, width, height, x, y);
@@ -37,8 +42,8 @@ class Menu {
             if(
                 cursor_position_x < currentButton.buttonX + currentButton.buttonWidth &&
                 cursor_position_x > currentButton.buttonX &&
-                abs(cursor_position_y - 600) < currentButton.buttonY + currentButton.buttonHeight &&
-                abs(cursor_position_y - 600) > currentButton.buttonY
+                abs(cursor_position_y - *display_h) < currentButton.buttonY + currentButton.buttonHeight &&
+                abs(cursor_position_y - *display_h) > currentButton.buttonY
             ) {
                 return true;
             }

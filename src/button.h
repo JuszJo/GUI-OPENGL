@@ -13,22 +13,23 @@ class Button: public Entity {
         int stride = 5;
 
     public:
-        float buttonWidth;
-        float buttonHeight;
+        float buttonWidth, buttonHeight, buttonX, buttonY;
         bool active = false;
 
         // default constructor
         Button() {}
 
-        Button(char* texturePath, float width, float height) {
+        Button(char* texturePath, float width, float height, float x, float y) {
             buttonWidth = width;
             buttonHeight = height;
+            buttonX = x;
+            buttonY = y;
 
             float vertices[20] = {
-                0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-                width, 0.0f, 0.0f, 1.0f, 1.0f,
-                0.0f, height, 0.0f, 0.0f, 0.0f,
-                width, height, 0.0f, 1.0f, 0.0f
+                x, y, 0.0f, 0.0f, 1.0f,
+                x + width, y, 0.0f, 1.0f, 1.0f,
+                x, y + height, 0.0f, 0.0f, 0.0f,
+                x + width, y + height, 0.0f, 1.0f, 0.0f
             };
             genVertexandBuffers(&VAO, &VBO);
             bindVAO(VAO);

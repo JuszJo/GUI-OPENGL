@@ -30,7 +30,7 @@ int main() {
     Shader shader("shaders/vertexShader.glsl", "shaders/fragmentShader.glsl");
     Shader menuShader("shaders/menu/menuVertexShader.glsl", "shaders/menu/menuFragmentShader.glsl");
     Square square;
-    // Button button((char*)"src\\assets\\playbutton.png", 50.0f, 30.0f);
+    // Button button((char*)"src\\assets\\playbutton.png", 50.0f, 30.0f, 0.0f, 0.0f);
     Menu menu;
 
     menu.addButton();

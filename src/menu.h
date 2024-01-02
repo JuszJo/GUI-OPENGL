@@ -22,7 +22,7 @@ class Menu {
         Menu() {}
 
         void addButton() {
-            Button newButton((char*)"src\\assets\\playbutton.png", 50.0f, 30.0f);
+            Button newButton((char*)"src\\assets\\playbutton.png", 50.0f, 30.0f, 0.0f, 0.0f);
 
             newButton.active = true;
 

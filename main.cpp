@@ -44,6 +44,8 @@ int main() {
 
     glm::mat4 projection = glm::mat4(1.0f);
 
+    glfwSwapInterval(1);
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -52,6 +54,8 @@ int main() {
         glViewport(0, 0, display_w, display_h);
         glfwGetCursorPos(window, &menu.cursor_position_x, &menu.cursor_position_y);
 
+        player.processInput(window);
+
         projection = glm::ortho(0.0f, (float)display_w, 0.0f, (float)display_h, -1.0f, 1.0f);
 
         glfwPollEvents();
@@ -59,10 +63,9 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT);
 
         shader.use();
+        player.update(&shader);
         player.setUniformMatrix4fv(&shader, (char*)"model");
         player.setProjection(&shader, projection);
-        player.shouldAnimate = true;
-        player.animate(&shader);
         player.render();
 
         // menuShader.use();

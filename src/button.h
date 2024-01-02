@@ -15,6 +15,10 @@ class Button: public Entity {
     public:
         float buttonWidth;
         float buttonHeight;
+        bool active = false;
+
+        // default constructor
+        Button() {}
 
         Button(char* texturePath, float width, float height) {
             buttonWidth = width;

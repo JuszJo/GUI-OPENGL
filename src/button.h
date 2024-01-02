@@ -45,6 +45,17 @@ class Button: public Entity {
             loadImage(texturePath);
         }
 
+        void scale(float scaleFactor) {
+            float scaledWidth = buttonWidth * scaleFactor;
+            float scaledHeight = buttonHeight * scaleFactor;
+
+            model = glm::translate(model, glm::vec3((300 - (scaledWidth / 2)) + (scaledWidth / 2), (300 - (scaledHeight / 2)) + (scaledHeight / 2), 0.0f));
+            
+            model = glm::scale(model, glm::vec3(scaleFactor, scaleFactor, 1.0f));
+            
+            model = glm::translate(model, glm::vec3(-(buttonX + (buttonWidth / 2)), -(buttonY + (buttonHeight / 2)), 0.0f));
+        }
+
         void render() {
             glBindVertexArray(VAO);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);

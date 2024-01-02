@@ -33,14 +33,17 @@ class Menu {
             ++currentButtonIndex;
         }
 
-        void checkHover(Button currentButton) {
+        bool checkHover(Button currentButton) {
             if(
                 cursor_position_x > currentButton.buttonX &&
                 cursor_position_x < currentButton.buttonX + currentButton.buttonWidth &&
                 cursor_position_y > currentButton.buttonY &&
                 cursor_position_y < currentButton.buttonY + currentButton.buttonHeight
             ) {
-                std::cout << "HOVER\n";
+                return true;
+            }
+            else {
+                return false;
             }
         }
 
@@ -51,9 +54,10 @@ class Menu {
                 Button currentButton = buttons[i];
 
                 if(currentButton.active) {
+                    if(checkHover(currentButton)) currentButton.scale(0.9f);
                     currentButton.setProjection(menuShader, projection);
+                    currentButton.setUniformMatrix4fv(menuShader, (char*)"model");
                     currentButton.render();
-                    checkHover(currentButton);
                 }
             }
         }

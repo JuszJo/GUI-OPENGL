@@ -98,6 +98,7 @@ class Button: public Entity {
         }
 
         void render() {
+            glBindTexture(GL_TEXTURE_2D, TBO);
             glBindVertexArray(VAO);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
         }

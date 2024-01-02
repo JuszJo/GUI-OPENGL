@@ -12,6 +12,8 @@ struct AnimatedState {
     char* name;
     float totalFrames;
     int animateBuffer;
+    int textureIndex;
+    unsigned int* TBO;
 };
 
 class Player: public Entity {
@@ -19,6 +21,8 @@ class Player: public Entity {
         int stride = 5;
 
     public:
+        unsigned int TBO2;
+
         float playerWidth, playerHeight, playerX, playerY;
         const char* axis = "origin";
 
@@ -26,9 +30,9 @@ class Player: public Entity {
 
         float currentFrame = 1.0f;
 
-        AnimatedState idle = {(char*)"idle", 8.0f, 1};
+        AnimatedState idle = {(char*)"idle", 11.0f, 4, 1, nullptr};
 
-        AnimatedState currentAnimatedState[1] = {idle};
+        AnimatedState currentAnimatedState[1];
 
         int animateBuffer = 4;
         int elapsedFrames = 0;
@@ -73,7 +77,45 @@ class Player: public Entity {
 
             cleanupBuffers();
 
-            loadImage(texturePath);
+            loadImage(texturePath, &TBO);
+            loadImage((char*)"src\\assets\\playeridle.png", &TBO2);
+
+            idle.TBO = &TBO2;
+
+            currentAnimatedState[0] = idle;
+        }
+
+        void loadImage(char* path, unsigned int* TBO) {
+            int width, height, nChannels;
+
+            stbi_uc* imageData = stbi_load(path, &width, &height, &nChannels, 0);
+
+            if(!imageData) {
+                const char* reason = stbi_failure_reason();
+
+                std::cout << reason << std::endl;
+            }
+
+            glGenTextures(1, TBO);
+            glBindTexture(GL_TEXTURE_2D, *TBO);
+
+            // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            if(nChannels > 3) {
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
+            }
+            else {
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, imageData);
+            }
+
+            glGenerateMipmap(GL_TEXTURE_2D);
+
+            stbi_image_free(imageData);
         }
 
         void processInput(GLFWwindow* window) {
@@ -97,28 +139,35 @@ class Player: public Entity {
             }
         }
 
-        void pickAnimation(char* name, float numberFrames, int animationBuffer) {
-            AnimatedState animatedState;
-            animatedState.name = name;
-            animatedState.totalFrames = numberFrames;
-            animatedState.animateBuffer = animateBuffer;
+        void pickAnimation(char* name, float numberFrames, int animationBuffer, int textureIndex, unsigned int* textureBuffer) {
+            if(currentAnimatedState[0].name != name) {
+                AnimatedState animatedState;
+                animatedState.name = name;
+                animatedState.totalFrames = numberFrames;
+                animatedState.animateBuffer = animateBuffer;
+                animatedState.textureIndex = textureIndex;
+                animatedState.TBO = textureBuffer;
 
-            currentAnimatedState[0] = animatedState;
+                currentAnimatedState[0] = animatedState;
+
+                elapsedFrames = 0;
+                currentFrame = 0;
+            }
         }
 
         void checkState() {
             switch (currentState) {
                 case RIGHT:
-                    pickAnimation((char*)"right", 8.0f, 4);
+                    pickAnimation((char*)"right", 8.0f, 4, 0, &TBO);
                     speed = glm::vec3(acceleration, 0.0f, 0.0f);
                     shouldAnimate = true;
                     
                     break;
 
                 case IDLE:
-                    pickAnimation((char*)"idle", 8.0f, 1);
+                    pickAnimation((char*)"idle", 11.0f, 4, 1, &TBO2);
                     speed = glm::vec3(0.0f, 0.0f, 0.0f);
-                    shouldAnimate = false;
+                    shouldAnimate = true;
                     
                     break;
                 
@@ -198,10 +247,10 @@ class Player: public Entity {
         }
 
         void render(Shader* shader) {
-            // std::cout << currentAnimatedState[0].totalFrames << "\t" << currentFrame <<std::endl;
+            // std::cout << currentAnimatedState[0].name << "\t" << currentAnimatedState[0].totalFrames << "\t" << currentFrame <<std::endl;
             setUniform1f(shader, (char*)"totalFrames", currentAnimatedState[0].totalFrames);
             setUniform1f(shader, (char*)"currentFrame", currentFrame);
-            glBindTexture(GL_TEXTURE_2D, TBO);
+            glBindTexture(GL_TEXTURE_2D, *currentAnimatedState[0].TBO);
             glBindVertexArray(VAO);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
         }

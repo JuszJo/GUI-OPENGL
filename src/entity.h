@@ -31,6 +31,11 @@ class Entity {
             glUniform1f(location, value);
         }
 
+        void setUniform1i(Shader* shader, char* name, float value) {
+            int location = glGetUniformLocation(shader -> shaderProgram, name);
+            glUniform1f(location, value);
+        }
+
         void setUniformMatrix4fv(Shader* shader, char* name) {
             int location = glGetUniformLocation(shader -> shaderProgram, name);
             glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(model));

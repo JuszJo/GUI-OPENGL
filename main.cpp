@@ -10,6 +10,7 @@
 #include "src/button.h"
 #include "src/menu.h"
 #include "src/background.h"
+#include "src/player.h"
 
 int main() {
     if (!glfwInit()) return 1;
@@ -37,10 +38,9 @@ int main() {
     menu.addButton((char*)"src\\assets\\playbutton.png", 100.0f, 50.0f, 50.0f, 25.0f);
     menu.addButton((char*)"src\\assets\\quitbutton.png", 100.0f, 50.0f, 50.0f, 300.0f);
 
+    Player player((char*)"src\\assets\\player.png", 78.0f, 58.0f, 100.0f, 200.0f);
 
-    Square square((char*)"src\\assets\\player.png", 78.0f, 58.0f, 100.0f, 200.0f);
-
-    square.scale(1.5f, 1.5f);
+    player.scale(1.5f, 1.5f);
 
     glm::mat4 projection = glm::mat4(1.0f);
 
@@ -59,11 +59,11 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT);
 
         shader.use();
-        square.setUniformMatrix4fv(&shader, (char*)"model");
-        square.setProjection(&shader, projection);
-        square.shouldAnimate = true;
-        square.animate(&shader);
-        square.render();
+        player.setUniformMatrix4fv(&shader, (char*)"model");
+        player.setProjection(&shader, projection);
+        player.shouldAnimate = true;
+        player.animate(&shader);
+        player.render();
 
         // menuShader.use();
         // menu.render(&menuShader, projection);

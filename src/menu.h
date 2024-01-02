@@ -16,6 +16,8 @@ class Menu {
         
 
     public:
+        double cursor_position_x, cursor_position_y;
+
         Button buttons[4];
         int currentButtonIndex = 0;
 
@@ -31,13 +33,27 @@ class Menu {
             ++currentButtonIndex;
         }
 
+        void checkHover(Button currentButton) {
+            if(
+                cursor_position_x > currentButton.buttonX &&
+                cursor_position_x < currentButton.buttonX + currentButton.buttonWidth &&
+                cursor_position_y > currentButton.buttonY &&
+                cursor_position_y < currentButton.buttonY + currentButton.buttonHeight
+            ) {
+                std::cout << "HOVER\n";
+            }
+        }
+
         void render(Shader* menuShader, glm::mat4 projection) {
+            // std::cout << cursor_position_x << "\t" << cursor_position_y << std::endl;
+
             for(int i = 0; i < sizeof(buttons) / sizeof(buttons[0]); ++i) {
                 Button currentButton = buttons[i];
 
                 if(currentButton.active) {
                     currentButton.setProjection(menuShader, projection);
                     currentButton.render();
+                    checkHover(currentButton);
                 }
             }
         }

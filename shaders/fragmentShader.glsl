@@ -1,15 +1,19 @@
 #version 330 core
 
-in vec3 fragColor;
 in vec2 textureCoord;
 
-uniform vec3 color;
 uniform sampler2D myTexture;
+uniform float totalFrames;
+uniform float currentFrame;
 
 out vec4 FragColor;
 
 void main() {
-    // FragColor = texture(myTexture, textureCoord) * vec4(fragColor * color, 1.0);
-    FragColor = texture(myTexture, textureCoord);
-    // FragColor = vec4(color, 1.0);
+    float frameWidth = 1.0 / totalFrames;
+
+    vec2 FrameCoord = textureCoord * vec2(frameWidth, 1.0);
+
+    FrameCoord = vec2(FrameCoord.x + ((currentFrame - 1.0) * (frameWidth)), FrameCoord.y);
+
+    FragColor = texture(myTexture, FrameCoord);
 }

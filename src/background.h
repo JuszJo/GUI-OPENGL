@@ -15,6 +15,12 @@ class Background: public Entity {
     public:
         float backgroundWidth, backgroundHeight, backgroundX, backgroundY;
         const char* axis = "origin";
+        // float totalFrames = 2.0f;
+        float totalFrames = 1.0f;
+        float currentFrame = 1.0f;
+
+        int animateBuffer = 1000;
+        int elapsedFrames = 0;
 
         // default constructor
         Background() {}
@@ -90,6 +96,21 @@ class Background: public Entity {
                 model = glm::translate(model, glm::vec3(-backgroundX, -backgroundY, 0.0f));
             }
             updateSize(scaledWidth, scaledHeight);
+        }
+
+        void animate(Shader* shader) {
+            if(elapsedFrames % animateBuffer == 0) {
+                if(currentFrame > totalFrames) currentFrame = 1;
+
+                setUniform1f(shader, (char*)"totalFrames", totalFrames);
+                setUniform1f(shader, (char*)"currentFrame", currentFrame);
+
+                ++currentFrame;
+
+                elapsedFrames = 0;
+            }
+
+            ++elapsedFrames;
         }
 
         void render() {

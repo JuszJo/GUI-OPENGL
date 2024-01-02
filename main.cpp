@@ -30,13 +30,15 @@ int main() {
 
     Shader shader("shaders/vertexShader.glsl", "shaders/fragmentShader.glsl");
     Shader menuShader("shaders/menu/menuVertexShader.glsl", "shaders/menu/menuFragmentShader.glsl");
-    Square square;
     // Button button((char*)"src\\assets\\playbutton.png", 50.0f, 30.0f, 0.0f, 0.0f);
-    Background bg((char*)"src\\assets\\bg.jpg", 600.0f, 600.0f, 0.0f, 0.0f);
+    Background bg((char*)"src\\assets\\bg2.jpg", 600.0f, 600.0f, 0.0f, 0.0f);
     Menu menu(&display_w, &display_h);
 
     menu.addButton((char*)"src\\assets\\playbutton.png", 100.0f, 50.0f, 50.0f, 25.0f);
     menu.addButton((char*)"src\\assets\\quitbutton.png", 100.0f, 50.0f, 50.0f, 300.0f);
+
+
+    Square square((char*)"src\\assets\\player.png", 78.0f, 58.0f, 100.0f, 200.0f);
 
     glm::mat4 projection = glm::mat4(1.0f);
 
@@ -51,18 +53,22 @@ int main() {
         glClearColor(0.45f, 0.55f, 0.60f, 1.00f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // shader.use();
-        // square.setProjection(&shader, projection);
-        // square.render();
+        shader.use();
+        bg.setUniformMatrix4fv(&menuShader, (char*)"model");
+        square.setProjection(&shader, projection);
+        square.shouldAnimate = true;
+        square.animate(&shader);
+        square.render();
 
-        menuShader.use();
+        // menuShader.use();
         // menu.render(&menuShader, projection);
         // button.setProjection(&menuShader, projection);
         // button.render();
-        bg.scale((display_w / bg.backgroundWidth), (display_h / bg.backgroundHeight));
-        bg.setUniformMatrix4fv(&menuShader, (char*)"model");
-        bg.setProjection(&menuShader, projection);
-        bg.render();
+        // bg.scale((display_w / bg.backgroundWidth), (display_h / bg.backgroundHeight));
+        // bg.setUniformMatrix4fv(&menuShader, (char*)"model");
+        // bg.setProjection(&menuShader, projection);
+        // bg.animate(&menuShader);
+        // bg.render();
         
         glfwSwapBuffers(window);
     }

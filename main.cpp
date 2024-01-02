@@ -32,7 +32,7 @@ int main() {
     Shader shader("shaders/vertexShader.glsl", "shaders/fragmentShader.glsl");
     Shader menuShader("shaders/menu/menuVertexShader.glsl", "shaders/menu/menuFragmentShader.glsl");
     // Button button((char*)"src\\assets\\playbutton.png", 50.0f, 30.0f, 0.0f, 0.0f);
-    Background bg((char*)"src\\assets\\bg2.jpg", 600.0f, 600.0f, 0.0f, 0.0f);
+    Background bg((char*)"src\\assets\\bg.jpg", 600.0f, 600.0f, 0.0f, 0.0f);
     Menu menu(&display_w, &display_h);
 
     menu.addButton((char*)"src\\assets\\playbutton.png", 100.0f, 50.0f, 50.0f, 25.0f);
@@ -63,10 +63,15 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT);
 
         shader.use();
+        bg.scale((display_w / bg.backgroundWidth), (display_h / bg.backgroundHeight));
+        bg.setUniformMatrix4fv(&shader, (char*)"model");
+        bg.setProjection(&shader, projection);
+        bg.render(&shader);
+
         player.update(&shader);
         player.setUniformMatrix4fv(&shader, (char*)"model");
         player.setProjection(&shader, projection);
-        player.render();
+        player.render(&shader);
 
         // menuShader.use();
         // menu.render(&menuShader, projection);

@@ -20,7 +20,7 @@ class Background: public Entity {
         bool shouldAnimate = false;
 
         float totalFrames = 1.0f;
-        float currentFrame = 1.0f;
+        int currentFrame = 1;
 
         int animateBuffer = 1000;
         int elapsedFrames = 0;
@@ -125,7 +125,9 @@ class Background: public Entity {
             }
         }
 
-        void render() {
+        void render(Shader* shader) {
+            setUniform1f(shader, (char*)"totalFrames", totalFrames);
+            setUniform1f(shader, (char*)"currentFrame", currentFrame);
             glBindTexture(GL_TEXTURE_2D, TBO);
             glBindVertexArray(VAO);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);

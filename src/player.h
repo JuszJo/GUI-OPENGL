@@ -174,9 +174,6 @@ class Player: public Entity {
                 model = glm::scale(model, glm::vec3(scaleFactorX, scaleFactorY, 1.0f));
 
                 model = glm::translate(model, glm::vec3(-playerX, -playerY, 0.0f));
-
-                // std::cout << playerX << "\t" << playerY << std::endl;
-                // std::cout << scaleFactorX << "\t" << scaleFactorY << std::endl;
             }
             updateSize(scaledWidth, scaledHeight);
         }
@@ -184,12 +181,10 @@ class Player: public Entity {
         void animate(Shader* shader) {
             if(shouldAnimate) {
                 if(elapsedFrames % currentAnimatedState[0].animateBuffer == 0) {
-                    if(currentFrame > currentAnimatedState[0].totalFrames) currentFrame = 1;
-
-                    setUniform1f(shader, (char*)"totalFrames", currentAnimatedState[0].totalFrames);
-                    setUniform1f(shader, (char*)"currentFrame", currentFrame);
-
-                    ++currentFrame;
+                    if(currentFrame >= currentAnimatedState[0].totalFrames) currentFrame = 1;
+                    else {
+                        ++currentFrame;
+                    }
 
                     elapsedFrames = 0;
                 }
@@ -199,13 +194,13 @@ class Player: public Entity {
             else {
                 currentFrame = 1;
                 elapsedFrames = 0;
-
-                setUniform1f(shader, (char*)"totalFrames", currentAnimatedState[0].totalFrames);
-                setUniform1f(shader, (char*)"currentFrame", currentFrame);
             }
         }
 
-        void render() {
+        void render(Shader* shader) {
+            // std::cout << currentAnimatedState[0].totalFrames << "\t" << currentFrame <<std::endl;
+            setUniform1f(shader, (char*)"totalFrames", currentAnimatedState[0].totalFrames);
+            setUniform1f(shader, (char*)"currentFrame", currentFrame);
             glBindTexture(GL_TEXTURE_2D, TBO);
             glBindVertexArray(VAO);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);

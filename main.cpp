@@ -40,7 +40,12 @@ int main() {
 
     Square square((char*)"src\\assets\\player.png", 78.0f, 58.0f, 100.0f, 200.0f);
 
+    square.scale(1.5f, 1.5f);
+
     glm::mat4 projection = glm::mat4(1.0f);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     while (!glfwWindowShouldClose(window)) {
         glfwGetFramebufferSize(window, &display_w, &display_h);
@@ -54,7 +59,7 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT);
 
         shader.use();
-        bg.setUniformMatrix4fv(&menuShader, (char*)"model");
+        square.setUniformMatrix4fv(&shader, (char*)"model");
         square.setProjection(&shader, projection);
         square.shouldAnimate = true;
         square.animate(&shader);

@@ -14,8 +14,7 @@ class Square: public Entity {
 
     public:
         float squareWidth, squareHeight, squareX, squareY;
-        bool active = false;
-        const char* axis = "center";
+        const char* axis = "origin";
 
         bool shouldAnimate = false;
 
@@ -54,52 +53,52 @@ class Square: public Entity {
             loadImage(texturePath);
         }
 
-        void updatePosition(float newsquareX, float newsquareY) {
-            squareX = newsquareX;
-            squareY = newsquareY;
+        void updatePosition(float newSquareX, float newSquareY) {
+            squareX = newSquareX;
+            squareY = newSquareY;
         }
 
-        void updateSize(float newsquareWidth, float newsquareHeight) {
-            squareWidth = newsquareWidth;
-            squareHeight = newsquareHeight;
+        void updateSize(float newSquareWidth, float newSquareHeight) {
+            squareWidth = newSquareWidth;
+            squareHeight = newSquareHeight;
         }
 
-        void setPosition(float newsquareX, float newsquareY) {
-            model = glm::translate(model, glm::vec3(newsquareX, newsquareY, 0.0f));
+        void setPosition(float newSquareX, float newSquareY) {
+            model = glm::translate(model, glm::vec3(newSquareX, newSquareY, 0.0f));
 
             model = glm::translate(model, glm::vec3(-squareX, -squareY, 0.0f));
 
-            updatePosition(newsquareX, newsquareY);
+            updatePosition(newSquareX, newSquareY);
         }
 
-        void scale(float scaleFactor) {
-            float scaledWidth = squareWidth * scaleFactor;
-            float scaledHeight = squareHeight * scaleFactor;
+        void scale(float scaleFactorX, float scaleFactorY) {
+            float scaledWidth = squareWidth * scaleFactorX;
+            float scaledHeight = squareHeight * scaleFactorY;
 
             if(axis == (char*)"center") {
                 float dWidth = scaledWidth - squareWidth;
                 float dHeight = scaledHeight - squareHeight;
 
-                float newsquareX = squareX - (dWidth / 2);
-                float newsquareY = squareY - (dHeight / 2);
+                float newSquareX = squareX - (dWidth / 2);
+                float newSquareY = squareY - (dHeight / 2);
 
                 model = glm::translate(model, glm::vec3(squareX + (squareWidth / 2), squareY + (squareHeight / 2), 0.0f));
 
-                model = glm::scale(model, glm::vec3(scaleFactor, scaleFactor, 1.0f));
+                model = glm::scale(model, glm::vec3(scaleFactorX, scaleFactorY, 1.0f));
 
                 model = glm::translate(model, glm::vec3(-(squareX + (squareWidth / 2)), -(squareY + (squareHeight / 2)), 0.0f));
 
-                updatePosition(newsquareX, newsquareY);
-
-                // std::cout << squareX << "\t" << squareY << std::endl;
-                // std::cout << squareWidth << "\t" << scaledWidth << std::endl;
+                updatePosition(newSquareX, newSquareY);
             }
             else {
                 model = glm::translate(model, glm::vec3(squareX, squareY, 0.0f));
 
-                model = glm::scale(model, glm::vec3(scaleFactor, scaleFactor, 1.0f));
+                model = glm::scale(model, glm::vec3(scaleFactorX, scaleFactorY, 1.0f));
 
                 model = glm::translate(model, glm::vec3(-squareX, -squareY, 0.0f));
+
+                // std::cout << squareX << "\t" << squareY << std::endl;
+                // std::cout << scaleFactorX << "\t" << scaleFactorY << std::endl;
             }
             updateSize(scaledWidth, scaledHeight);
         }

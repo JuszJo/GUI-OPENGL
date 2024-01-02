@@ -16,6 +16,9 @@ class Background: public Entity {
         float backgroundWidth, backgroundHeight, backgroundX, backgroundY;
         const char* axis = "origin";
         // float totalFrames = 2.0f;
+
+        bool shouldAnimate = false;
+
         float totalFrames = 1.0f;
         float currentFrame = 1.0f;
 
@@ -99,18 +102,27 @@ class Background: public Entity {
         }
 
         void animate(Shader* shader) {
-            if(elapsedFrames % animateBuffer == 0) {
-                if(currentFrame > totalFrames) currentFrame = 1;
+            if(shouldAnimate) {
+                if(elapsedFrames % animateBuffer == 0) {
+                    if(currentFrame > totalFrames) currentFrame = 1;
+
+                    setUniform1f(shader, (char*)"totalFrames", totalFrames);
+                    setUniform1f(shader, (char*)"currentFrame", currentFrame);
+
+                    ++currentFrame;
+
+                    elapsedFrames = 0;
+                }
+
+                ++elapsedFrames;
+            }
+            else {
+                currentFrame = 1;
+                elapsedFrames = 0;
 
                 setUniform1f(shader, (char*)"totalFrames", totalFrames);
                 setUniform1f(shader, (char*)"currentFrame", currentFrame);
-
-                ++currentFrame;
-
-                elapsedFrames = 0;
             }
-
-            ++elapsedFrames;
         }
 
         void render() {

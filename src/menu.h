@@ -59,7 +59,7 @@ class Menu {
                 Button currentButton = buttons[i];
 
                 if(currentButton.active) {
-                    if(checkHover(currentButton)) currentButton.scale(2.0f);
+                    if(checkHover(currentButton)) currentButton.scale(2.0f, 2.0f);
                     currentButton.setProjection(menuShader, projection);
                     currentButton.setUniformMatrix4fv(menuShader, (char*)"model");
                     currentButton.render();

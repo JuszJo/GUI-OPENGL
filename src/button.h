@@ -65,9 +65,9 @@ class Button: public Entity {
             updatePosition(newButtonX, newButtonY);
         }
 
-        void scale(float scaleFactor) {
-            float scaledWidth = buttonWidth * scaleFactor;
-            float scaledHeight = buttonHeight * scaleFactor;
+        void scale(float scaleFactorX, float scaleFactorY) {
+            float scaledWidth = buttonWidth * scaleFactorX;
+            float scaledHeight = buttonHeight * scaleFactorY;
 
             if(axis == (char*)"center") {
                 float dWidth = scaledWidth - buttonWidth;
@@ -78,19 +78,16 @@ class Button: public Entity {
 
                 model = glm::translate(model, glm::vec3(buttonX + (buttonWidth / 2), buttonY + (buttonHeight / 2), 0.0f));
 
-                model = glm::scale(model, glm::vec3(scaleFactor, scaleFactor, 1.0f));
+                model = glm::scale(model, glm::vec3(scaleFactorX, scaleFactorY, 1.0f));
 
                 model = glm::translate(model, glm::vec3(-(buttonX + (buttonWidth / 2)), -(buttonY + (buttonHeight / 2)), 0.0f));
 
                 updatePosition(newButtonX, newButtonY);
-
-                // std::cout << buttonX << "\t" << buttonY << std::endl;
-                // std::cout << buttonWidth << "\t" << scaledWidth << std::endl;
             }
             else {
                 model = glm::translate(model, glm::vec3(buttonX, buttonY, 0.0f));
 
-                model = glm::scale(model, glm::vec3(scaleFactor, scaleFactor, 1.0f));
+                model = glm::scale(model, glm::vec3(scaleFactorX, scaleFactorY, 1.0f));
 
                 model = glm::translate(model, glm::vec3(-buttonX, -buttonY, 0.0f));
             }

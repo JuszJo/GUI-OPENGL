@@ -21,8 +21,8 @@ class Menu {
 
         Menu() {}
 
-        void addButton() {
-            Button newButton((char*)"src\\assets\\playbutton.png", 50.0f, 30.0f, 0.0f, 0.0f);
+        void addButton(char* texturePath, float width, float height, float x, float y) {
+            Button newButton(texturePath, width, height, x, y);
 
             newButton.active = true;
 

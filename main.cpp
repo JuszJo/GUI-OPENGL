@@ -9,6 +9,7 @@
 #include "src/square.h"
 #include "src/button.h"
 #include "src/menu.h"
+#include "src/background.h"
 
 int main() {
     if (!glfwInit()) return 1;
@@ -31,6 +32,7 @@ int main() {
     Shader menuShader("shaders/menu/menuVertexShader.glsl", "shaders/menu/menuFragmentShader.glsl");
     Square square;
     // Button button((char*)"src\\assets\\playbutton.png", 50.0f, 30.0f, 0.0f, 0.0f);
+    Background bg((char*)"src\\assets\\bg.jpg", 600.0f, 600.0f, 0.0f, 0.0f);
     Menu menu(&display_w, &display_h);
 
     menu.addButton((char*)"src\\assets\\playbutton.png", 100.0f, 50.0f, 50.0f, 25.0f);
@@ -54,9 +56,13 @@ int main() {
         // square.render();
 
         menuShader.use();
-        menu.render(&menuShader, projection);
+        // menu.render(&menuShader, projection);
         // button.setProjection(&menuShader, projection);
         // button.render();
+        bg.scale((display_w / bg.backgroundWidth), (display_h / bg.backgroundHeight));
+        bg.setUniformMatrix4fv(&menuShader, (char*)"model");
+        bg.setProjection(&menuShader, projection);
+        bg.render();
         
         glfwSwapBuffers(window);
     }

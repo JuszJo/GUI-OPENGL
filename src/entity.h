@@ -14,7 +14,7 @@
 class Entity {
     public:
         unsigned int VAO, VBO, EBO, TBO;
-        glm::mat4 model = glm::mat4(1.0f);    
+        glm::mat4 model = glm::mat4(1.0f);
 
         void setProjection(Shader* shader, glm::mat4 projection) {
             int location = glGetUniformLocation(shader -> shaderProgram, "projection");

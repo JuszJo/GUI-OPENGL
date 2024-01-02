@@ -15,6 +15,8 @@ class Button: public Entity {
     public:
         float buttonWidth, buttonHeight, buttonX, buttonY;
         bool active = false;
+        // const char* axis = "origin";
+        const char* axis = "center";
 
         // default constructor
         Button() {}
@@ -45,15 +47,54 @@ class Button: public Entity {
             loadImage(texturePath);
         }
 
+        void updatePosition(float newButtonX, float newButtonY) {
+            buttonX = newButtonX;
+            buttonY = newButtonY;
+        }
+
+        void updateSize(float newButtonWidth, float newButtonHeight) {
+            buttonWidth = newButtonWidth;
+            buttonHeight = newButtonHeight;
+        }
+
+        void setPosition(float newButtonX, float newButtonY) {
+            model = glm::translate(model, glm::vec3(newButtonX, newButtonY, 0.0f));
+
+            model = glm::translate(model, glm::vec3(-buttonX, -buttonY, 0.0f));
+
+            updatePosition(newButtonX, newButtonY);
+        }
+
         void scale(float scaleFactor) {
             float scaledWidth = buttonWidth * scaleFactor;
             float scaledHeight = buttonHeight * scaleFactor;
 
-            model = glm::translate(model, glm::vec3((300 - (scaledWidth / 2)) + (scaledWidth / 2), (300 - (scaledHeight / 2)) + (scaledHeight / 2), 0.0f));
-            
-            model = glm::scale(model, glm::vec3(scaleFactor, scaleFactor, 1.0f));
-            
-            model = glm::translate(model, glm::vec3(-(buttonX + (buttonWidth / 2)), -(buttonY + (buttonHeight / 2)), 0.0f));
+            if(axis == (char*)"center") {
+                float dWidth = scaledWidth - buttonWidth;
+                float dHeight = scaledHeight - buttonHeight;
+
+                float newButtonX = buttonX - (dWidth / 2);
+                float newButtonY = buttonY - (dHeight / 2);
+
+                model = glm::translate(model, glm::vec3(buttonX + (buttonWidth / 2), buttonY + (buttonHeight / 2), 0.0f));
+
+                model = glm::scale(model, glm::vec3(scaleFactor, scaleFactor, 1.0f));
+
+                model = glm::translate(model, glm::vec3(-(buttonX + (buttonWidth / 2)), -(buttonY + (buttonHeight / 2)), 0.0f));
+
+                updatePosition(newButtonX, newButtonY);
+
+                // std::cout << buttonX << "\t" << buttonY << std::endl;
+                // std::cout << buttonWidth << "\t" << scaledWidth << std::endl;
+            }
+            else {
+                model = glm::translate(model, glm::vec3(buttonX, buttonY, 0.0f));
+
+                model = glm::scale(model, glm::vec3(scaleFactor, scaleFactor, 1.0f));
+
+                model = glm::translate(model, glm::vec3(-buttonX, -buttonY, 0.0f));
+            }
+            updateSize(scaledWidth, scaledHeight);
         }
 
         void render() {

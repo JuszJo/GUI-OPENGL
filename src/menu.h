@@ -35,10 +35,10 @@ class Menu {
 
         bool checkHover(Button currentButton) {
             if(
-                cursor_position_x > currentButton.buttonX &&
                 cursor_position_x < currentButton.buttonX + currentButton.buttonWidth &&
-                cursor_position_y > currentButton.buttonY &&
-                cursor_position_y < currentButton.buttonY + currentButton.buttonHeight
+                cursor_position_x > currentButton.buttonX &&
+                abs(cursor_position_y - 600) < currentButton.buttonY + currentButton.buttonHeight &&
+                abs(cursor_position_y - 600) > currentButton.buttonY
             ) {
                 return true;
             }
@@ -48,13 +48,13 @@ class Menu {
         }
 
         void render(Shader* menuShader, glm::mat4 projection) {
-            // std::cout << cursor_position_x << "\t" << cursor_position_y << std::endl;
+            // std::cout << cursor_position_x << "\t" << abs(cursor_position_y - (double)600.0) << std::endl;
 
             for(int i = 0; i < sizeof(buttons) / sizeof(buttons[0]); ++i) {
                 Button currentButton = buttons[i];
 
                 if(currentButton.active) {
-                    if(checkHover(currentButton)) currentButton.scale(0.9f);
+                    if(checkHover(currentButton)) currentButton.scale(2.0f);
                     currentButton.setProjection(menuShader, projection);
                     currentButton.setUniformMatrix4fv(menuShader, (char*)"model");
                     currentButton.render();

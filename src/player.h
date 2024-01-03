@@ -14,6 +14,7 @@ struct AnimatedState {
     int animateBuffer;
     int textureIndex;
     unsigned int* TBO;
+    bool reversed;
 };
 
 class Player: public Entity {
@@ -21,7 +22,7 @@ class Player: public Entity {
         int stride = 5;
 
     public:
-        unsigned int TBO2;
+        unsigned int TBO2, TBO3;
 
         float playerWidth, playerHeight, playerX, playerY;
         const char* axis = "origin";
@@ -30,11 +31,10 @@ class Player: public Entity {
 
         float currentFrame = 1.0f;
 
-        AnimatedState idle = {(char*)"idle", 11.0f, 4, 1, nullptr};
+        AnimatedState idle = {(char*)"idle", 11.0f, 4, 1, nullptr, false};
 
         AnimatedState currentAnimatedState[1];
 
-        int animateBuffer = 4;
         int elapsedFrames = 0;
 
         glm::vec3 speed = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -79,6 +79,7 @@ class Player: public Entity {
 
             loadImage(texturePath, &TBO);
             loadImage((char*)"src\\assets\\playeridle.png", &TBO2);
+            loadImage((char*)"src\\assets\\player2.png", &TBO3);
 
             idle.TBO = &TBO2;
 
@@ -129,7 +130,7 @@ class Player: public Entity {
                 
             }
             else if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-                
+                if(currentState != LEFT) currentState = LEFT;
             }
             else if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
                 if(currentState != RIGHT) currentState = RIGHT;
@@ -139,33 +140,45 @@ class Player: public Entity {
             }
         }
 
-        void pickAnimation(char* name, float numberFrames, int animationBuffer, int textureIndex, unsigned int* textureBuffer) {
+        void resetAnimation(AnimatedState currentAnimation) {
+            elapsedFrames = 0;
+            currentFrame = currentAnimation.reversed ? currentAnimation.totalFrames : 1;
+        }
+
+        void pickAnimation(char* name, float numberFrames, int animationBuffer, int textureIndex, unsigned int* textureBuffer, bool reversed) {
             if(currentAnimatedState[0].name != name) {
                 AnimatedState animatedState;
                 animatedState.name = name;
                 animatedState.totalFrames = numberFrames;
-                animatedState.animateBuffer = animateBuffer;
+                animatedState.animateBuffer = animationBuffer;
                 animatedState.textureIndex = textureIndex;
                 animatedState.TBO = textureBuffer;
+                animatedState.reversed = reversed;
 
                 currentAnimatedState[0] = animatedState;
 
-                elapsedFrames = 0;
-                currentFrame = 0;
+                resetAnimation(currentAnimatedState[0]);
             }
         }
 
         void checkState() {
             switch (currentState) {
+                case LEFT:
+                    pickAnimation((char*)"left", 8.0f, 4, 0, &TBO3, true);
+                    speed = glm::vec3(-acceleration, 0.0f, 0.0f);
+                    shouldAnimate = true;
+                    
+                    break;
+
                 case RIGHT:
-                    pickAnimation((char*)"right", 8.0f, 4, 0, &TBO);
+                    pickAnimation((char*)"right", 8.0f, 4, 0, &TBO, false);
                     speed = glm::vec3(acceleration, 0.0f, 0.0f);
                     shouldAnimate = true;
                     
                     break;
 
                 case IDLE:
-                    pickAnimation((char*)"idle", 11.0f, 4, 1, &TBO2);
+                    pickAnimation((char*)"idle", 11.0f, 4, 1, &TBO2, false);
                     speed = glm::vec3(0.0f, 0.0f, 0.0f);
                     shouldAnimate = true;
                     
@@ -230,10 +243,8 @@ class Player: public Entity {
         void animate(Shader* shader) {
             if(shouldAnimate) {
                 if(elapsedFrames % currentAnimatedState[0].animateBuffer == 0) {
-                    if(currentFrame >= currentAnimatedState[0].totalFrames) currentFrame = 1;
-                    else {
-                        ++currentFrame;
-                    }
+                    if(!currentAnimatedState[0].reversed) animateForward(currentAnimatedState[0]);
+                    else animateReversed(currentAnimatedState[0]);
 
                     elapsedFrames = 0;
                 }
@@ -241,9 +252,18 @@ class Player: public Entity {
                 ++elapsedFrames;
             }
             else {
-                currentFrame = 1;
-                elapsedFrames = 0;
+                resetAnimation(currentAnimatedState[0]);
             }
+        }
+
+        void animateForward(AnimatedState currentAnimation) {
+            if(currentFrame >= currentAnimation.totalFrames) currentFrame = 1;
+            else ++currentFrame;
+        }
+
+        void animateReversed(AnimatedState currentAnimation) {
+            if(currentFrame <= 1) currentFrame = currentAnimation.totalFrames;
+            else --currentFrame;
         }
 
         void render(Shader* shader) {

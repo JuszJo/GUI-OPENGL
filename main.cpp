@@ -40,7 +40,7 @@ int main() {
 
     Player player((char*)"src\\assets\\player.png", 78.0f, 58.0f, 100.0f, 200.0f);
 
-    player.scale(1.5f, 1.5f);
+    player.scale(2.0f, 2.0f);
 
     glm::mat4 projection = glm::mat4(1.0f);
 

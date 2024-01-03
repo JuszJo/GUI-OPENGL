@@ -8,130 +8,217 @@
 
 #include "entity.h"
 
-class Background: public Entity {
-    private:
-        int stride = 5;
-
+class BackgroundBeta {
     public:
-        float backgroundWidth, backgroundHeight, backgroundX, backgroundY;
-        const char* axis = "origin";
-        // float totalFrames = 2.0f;
+        unsigned int VAO, VBO, TBO;
 
-        bool shouldAnimate = false;
+        BackgroundBeta(char* path) {
+            int width, height, nChannels;
 
-        float totalFrames = 1.0f;
-        int currentFrame = 1;
+            stbi_uc* imageData = stbi_load(path, &width, &height, &nChannels, 0);
 
-        int animateBuffer = 1000;
-        int elapsedFrames = 0;
+            if(!imageData) {
+                const char* reason = stbi_failure_reason();
 
-        // default constructor
-        Background() {}
+                std::cout << reason << std::endl;
+            }
 
-        Background(char* texturePath, float width, float height, float x, float y) {
-            backgroundWidth = width;
-            backgroundHeight = height;
-            backgroundX = x;
-            backgroundY = y;
+            glGenTextures(1, &TBO);
+            glBindTexture(GL_TEXTURE_2D, TBO);
 
-            float vertices[20] = {
+            // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+            // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            
+            if(nChannels > 3) {
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
+            }
+            else {
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, imageData);
+            }
+
+            glGenerateMipmap(GL_TEXTURE_2D);
+
+            stbi_image_free(imageData);
+        }
+
+        void render(Shader* shader, float x, float y, float width, float height, glm::mat4 projection) {
+            glm::mat4 model = glm::mat4(1.0f);
+
+            // std::cout << x << "\t" << y << std::endl;
+            // std::cout << width << "\t" << height << std::endl;
+
+            // float vertices[] = {
+            //     x, y, 0.0f,
+            //     x + width, y, 0.0f,
+            //     x, y + height, 0.0f,
+            //     x + width, y + height, 0.0f
+            // };
+
+            float vertices[] = {
                 x, y, 0.0f, 0.0f, 1.0f,
                 x + width, y, 0.0f, 1.0f, 1.0f,
                 x, y + height, 0.0f, 0.0f, 0.0f,
                 x + width, y + height, 0.0f, 1.0f, 0.0f
             };
-            genVertexandBuffers(&VAO, &VBO);
-            bindVAO(VAO);
 
-            int verticeSize = sizeof(vertices);
-            handleVertexBufferObject(VBO, vertices, verticeSize);
+            glGenVertexArrays(1, &VAO);
+            glGenBuffers(1, &VBO);
 
-            handleVertexArrayObject(0, 3, stride, 0);
-            handleVertexArrayObject(1, 2, stride, 3);
+            glBindVertexArray(VAO);
 
-            cleanupBuffers();
+            glBindBuffer(GL_ARRAY_BUFFER, VBO);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-            loadImage(texturePath);
-        }
+            // glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+            // glEnableVertexAttribArray(0);
 
-        void updatePosition(float newbackgroundX, float newbackgroundY) {
-            backgroundX = newbackgroundX;
-            backgroundY = newbackgroundY;
-        }
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), nullptr);
+            glEnableVertexAttribArray(0);
 
-        void updateSize(float newbackgroundWidth, float newbackgroundHeight) {
-            backgroundWidth = newbackgroundWidth;
-            backgroundHeight = newbackgroundHeight;
-        }
+            glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+            glEnableVertexAttribArray(1);
 
-        void setPosition(float newbackgroundX, float newbackgroundY) {
-            model = glm::translate(model, glm::vec3(newbackgroundX, newbackgroundY, 0.0f));
+            glBindVertexArray(0);
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-            model = glm::translate(model, glm::vec3(-backgroundX, -backgroundY, 0.0f));
+            // glUniformMatrix4fv(glGetUniformLocation(shader -> shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
+            glUniformMatrix4fv(glGetUniformLocation(shader -> shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
-            updatePosition(newbackgroundX, newbackgroundY);
-        }
-
-        void scale(float scaleFactorX, float scaleFactorY) {
-            float scaledWidth = backgroundWidth * scaleFactorX;
-            float scaledHeight = backgroundHeight * scaleFactorY;
-
-            if(axis == (char*)"center") {
-                float dWidth = scaledWidth - backgroundWidth;
-                float dHeight = scaledHeight - backgroundHeight;
-
-                float newbackgroundX = backgroundX - (dWidth / 2);
-                float newbackgroundY = backgroundY - (dHeight / 2);
-
-                model = glm::translate(model, glm::vec3(backgroundX + (backgroundWidth / 2), backgroundY + (backgroundHeight / 2), 0.0f));
-
-                model = glm::scale(model, glm::vec3(scaleFactorX, scaleFactorY, 1.0f));
-
-                model = glm::translate(model, glm::vec3(-(backgroundX + (backgroundWidth / 2)), -(backgroundY + (backgroundHeight / 2)), 0.0f));
-
-                updatePosition(newbackgroundX, newbackgroundY);
-            }
-            else {
-                model = glm::translate(model, glm::vec3(backgroundX, backgroundY, 0.0f));
-
-                model = glm::scale(model, glm::vec3(scaleFactorX, scaleFactorY, 1.0f));
-
-                model = glm::translate(model, glm::vec3(-backgroundX, -backgroundY, 0.0f));
-            }
-            updateSize(scaledWidth, scaledHeight);
-        }
-
-        void animate(Shader* shader) {
-            if(shouldAnimate) {
-                if(elapsedFrames % animateBuffer == 0) {
-                    if(currentFrame > totalFrames) currentFrame = 1;
-
-                    setUniform1f(shader, (char*)"totalFrames", totalFrames);
-                    setUniform1f(shader, (char*)"currentFrame", currentFrame);
-
-                    ++currentFrame;
-
-                    elapsedFrames = 0;
-                }
-
-                ++elapsedFrames;
-            }
-            else {
-                currentFrame = 1;
-                elapsedFrames = 0;
-
-                setUniform1f(shader, (char*)"totalFrames", totalFrames);
-                setUniform1f(shader, (char*)"currentFrame", currentFrame);
-            }
-        }
-
-        void render(Shader* shader) {
-            setUniform1f(shader, (char*)"totalFrames", totalFrames);
-            setUniform1f(shader, (char*)"currentFrame", currentFrame);
             glBindTexture(GL_TEXTURE_2D, TBO);
             glBindVertexArray(VAO);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
         }
 };
+
+// class Background: public Entity {
+//     private:
+//         int stride = 5;
+
+//     public:
+//         float backgroundWidth, backgroundHeight, backgroundX, backgroundY;
+//         const char* axis = "origin";
+//         // float totalFrames = 2.0f;
+
+//         bool shouldAnimate = false;
+
+//         float totalFrames = 1.0f;
+//         int currentFrame = 1;
+
+//         int animateBuffer = 1000;
+//         int elapsedFrames = 0;
+
+//         // default constructor
+//         Background() {}
+
+//         Background(char* texturePath, float width, float height, float x, float y) {
+//             backgroundWidth = width;
+//             backgroundHeight = height;
+//             backgroundX = x;
+//             backgroundY = y;
+
+//             float vertices[20] = {
+//                 x, y, 0.0f, 0.0f, 1.0f,
+//                 x + width, y, 0.0f, 1.0f, 1.0f,
+//                 x, y + height, 0.0f, 0.0f, 0.0f,
+//                 x + width, y + height, 0.0f, 1.0f, 0.0f
+//             };
+//             genVertexandBuffers(&VAO, &VBO);
+//             bindVAO(VAO);
+
+//             int verticeSize = sizeof(vertices);
+//             handleVertexBufferObject(VBO, vertices, verticeSize);
+
+//             handleVertexArrayObject(0, 3, stride, 0);
+//             handleVertexArrayObject(1, 2, stride, 3);
+
+//             cleanupBuffers();
+
+//             loadImage(texturePath);
+//         }
+
+//         void updatePosition(float newbackgroundX, float newbackgroundY) {
+//             backgroundX = newbackgroundX;
+//             backgroundY = newbackgroundY;
+//         }
+
+//         void updateSize(float newbackgroundWidth, float newbackgroundHeight) {
+//             backgroundWidth = newbackgroundWidth;
+//             backgroundHeight = newbackgroundHeight;
+//         }
+
+//         void setPosition(float newbackgroundX, float newbackgroundY) {
+//             model = glm::translate(model, glm::vec3(newbackgroundX, newbackgroundY, 0.0f));
+
+//             model = glm::translate(model, glm::vec3(-backgroundX, -backgroundY, 0.0f));
+
+//             updatePosition(newbackgroundX, newbackgroundY);
+//         }
+
+//         void scale(float scaleFactorX, float scaleFactorY) {
+//             float scaledWidth = backgroundWidth * scaleFactorX;
+//             float scaledHeight = backgroundHeight * scaleFactorY;
+
+//             if(axis == (char*)"center") {
+//                 float dWidth = scaledWidth - backgroundWidth;
+//                 float dHeight = scaledHeight - backgroundHeight;
+
+//                 float newbackgroundX = backgroundX - (dWidth / 2);
+//                 float newbackgroundY = backgroundY - (dHeight / 2);
+
+//                 model = glm::translate(model, glm::vec3(backgroundX + (backgroundWidth / 2), backgroundY + (backgroundHeight / 2), 0.0f));
+
+//                 model = glm::scale(model, glm::vec3(scaleFactorX, scaleFactorY, 1.0f));
+
+//                 model = glm::translate(model, glm::vec3(-(backgroundX + (backgroundWidth / 2)), -(backgroundY + (backgroundHeight / 2)), 0.0f));
+
+//                 updatePosition(newbackgroundX, newbackgroundY);
+//             }
+//             else {
+//                 model = glm::translate(model, glm::vec3(backgroundX, backgroundY, 0.0f));
+
+//                 model = glm::scale(model, glm::vec3(scaleFactorX, scaleFactorY, 1.0f));
+
+//                 model = glm::translate(model, glm::vec3(-backgroundX, -backgroundY, 0.0f));
+//             }
+//             updateSize(scaledWidth, scaledHeight);
+//         }
+
+//         void animate(Shader* shader) {
+//             if(shouldAnimate) {
+//                 if(elapsedFrames % animateBuffer == 0) {
+//                     if(currentFrame > totalFrames) currentFrame = 1;
+
+//                     setUniform1f(shader, (char*)"totalFrames", totalFrames);
+//                     setUniform1f(shader, (char*)"currentFrame", currentFrame);
+
+//                     ++currentFrame;
+
+//                     elapsedFrames = 0;
+//                 }
+
+//                 ++elapsedFrames;
+//             }
+//             else {
+//                 currentFrame = 1;
+//                 elapsedFrames = 0;
+
+//                 setUniform1f(shader, (char*)"totalFrames", totalFrames);
+//                 setUniform1f(shader, (char*)"currentFrame", currentFrame);
+//             }
+//         }
+
+//         void render(Shader* shader) {
+//             setUniform1f(shader, (char*)"totalFrames", totalFrames);
+//             setUniform1f(shader, (char*)"currentFrame", currentFrame);
+//             glBindTexture(GL_TEXTURE_2D, TBO);
+//             glBindVertexArray(VAO);
+//             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+//         }
+// };
 
 #endif

@@ -9,6 +9,7 @@
 #include "entity.h"
 #include "animation.h"
 #include "gravity.h"
+#include "collision.h"
 
 class Player: public Entity {
     private:
@@ -18,17 +19,8 @@ class Player: public Entity {
         unsigned int TBO2, TBO3, TBO4;
 
         float playerWidth, playerHeight, playerX, playerY;
+
         const char* axis = "origin";
-
-        bool shouldAnimate = false;
-
-        float currentFrame = 1.0f;
-
-        // AnimatedState idle = {(char*)"idle", 11.0f, 4, 1, nullptr, false};
-
-        // AnimatedState currentAnimatedState[1];
-
-        // int elapsedFrames = 0;
 
         Animation animation;
 
@@ -47,6 +39,8 @@ class Player: public Entity {
         STATE currentState = IDLE;
 
         Gravity gravity;
+
+        Collision collision;
 
         // float jumpForce = 10.0f;
         // bool shouldJump = false;
@@ -84,10 +78,6 @@ class Player: public Entity {
             loadImage((char*)"src\\assets\\playeridle.png", &TBO2);
             loadImage((char*)"src\\assets\\player2.png", &TBO3);
             loadImage((char*)"src\\assets\\playerup.png", &TBO4);
-
-            // idle.TBO = &TBO2;
-
-            // currentAnimatedState[0] = idle;
 
             Animation newAnimation((char*)"idle", 11.0f, 4, 1, nullptr, false);
 
@@ -231,33 +221,38 @@ class Player: public Entity {
         }
 
         void scale(float scaleFactorX, float scaleFactorY) {
-            float scaledWidth = playerWidth * scaleFactorX;
-            float scaledHeight = playerHeight * scaleFactorY;
-
-            if(axis == (char*)"center") {
-                float dWidth = scaledWidth - playerWidth;
-                float dHeight = scaledHeight - playerHeight;
-
-                float newPlayerX = playerX - (dWidth / 2);
-                float newPlayerY = playerY - (dHeight / 2);
-
-                model = glm::translate(model, glm::vec3(playerX + (playerWidth / 2), playerY + (playerHeight / 2), 0.0f));
-
-                model = glm::scale(model, glm::vec3(scaleFactorX, scaleFactorY, 1.0f));
-
-                model = glm::translate(model, glm::vec3(-(playerX + (playerWidth / 2)), -(playerY + (playerHeight / 2)), 0.0f));
-
-                updatePosition(newPlayerX, newPlayerY);
-            }
-            else {
-                model = glm::translate(model, glm::vec3(playerX, playerY, 0.0f));
-
-                model = glm::scale(model, glm::vec3(scaleFactorX, scaleFactorY, 1.0f));
-
-                model = glm::translate(model, glm::vec3(-playerX, -playerY, 0.0f));
-            }
-            updateSize(scaledWidth, scaledHeight);
+            
         }
+
+
+        // void scale(float scaleFactorX, float scaleFactorY) {
+        //     float scaledWidth = playerWidth * scaleFactorX;
+        //     float scaledHeight = playerHeight * scaleFactorY;
+
+        //     if(axis == (char*)"center") {
+        //         float dWidth = scaledWidth - playerWidth;
+        //         float dHeight = scaledHeight - playerHeight;
+
+        //         float newPlayerX = playerX - (dWidth / 2);
+        //         float newPlayerY = playerY - (dHeight / 2);
+
+        //         model = glm::translate(model, glm::vec3(playerX + (playerWidth / 2), playerY + (playerHeight / 2), 0.0f));
+
+        //         model = glm::scale(model, glm::vec3(scaleFactorX, scaleFactorY, 1.0f));
+
+        //         model = glm::translate(model, glm::vec3(-(playerX + (playerWidth / 2)), -(playerY + (playerHeight / 2)), 0.0f));
+
+        //         updatePosition(newPlayerX, newPlayerY);
+        //     }
+        //     else {
+        //         model = glm::translate(model, glm::vec3(playerX, playerY, 0.0f));
+
+        //         model = glm::scale(model, glm::vec3(scaleFactorX, scaleFactorY, 1.0f));
+
+        //         model = glm::translate(model, glm::vec3(-playerX, -playerY, 0.0f));
+        //     }
+        //     updateSize(scaledWidth, scaledHeight);
+        // }
 
         // void animate(Shader* shader) {
         //     if(shouldAnimate) {
@@ -295,15 +290,30 @@ class Player: public Entity {
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
         }
 
+        void collisionResponse(CollisionInfo info) {
+            if(info.collidableBlockIndex != -1) {
+                CollidableBlock currentBlock = collision.blocks[info.collidableBlockIndex];
+
+                float bottom = abs(playerY - currentBlock.position_y + currentBlock.height);
+                float top = abs(playerY + playerHeight > currentBlock.position_y);
+
+                if(collision.getCollideAxisY(bottom, top) == (char*)"bottom") {
+                    gravity.stopGravity();
+
+                    speed.y = 0;
+
+                    setPosition(playerX, currentBlock.position_y + currentBlock.height);
+                }
+            }
+        }
+
         void update(Shader* shader) {
-            gravity.applyGravity(&speed);
+            // gravity.applyGravity(&speed);
             checkState();
             move();
-            // applyGravity();
             animation.animate();
-            // animate(shader);
-
-            // std::cout << currentAnimatedState[0].name << std::endl;
+            // CollisionInfo info = collision.checkCollision(playerX, playerY, playerWidth, playerHeight);
+            // collisionResponse(info);
         }
 };
 

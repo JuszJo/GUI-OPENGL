@@ -6,9 +6,10 @@
 
 #include "libs/shader.h"
 
-#include "src/square.h"
-#include "src/button.h"
-#include "src/menu.h"
+// #include "src/square.h"
+// #include "src/button.h"
+// #include "src/menu.h"
+
 #include "src/background.h"
 #include "src/player.h"
 
@@ -29,18 +30,31 @@ int main() {
 
     int display_w, display_h;
 
-    Shader shader("shaders/vertexShader.glsl", "shaders/fragmentShader.glsl");
-    Shader menuShader("shaders/menu/menuVertexShader.glsl", "shaders/menu/menuFragmentShader.glsl");
+    // Shader shader("shaders/vertexShader.glsl", "shaders/fragmentShader.glsl");
+    // Shader menuShader("shaders/menu/menuVertexShader.glsl", "shaders/menu/menuFragmentShader.glsl");
     // Button button((char*)"src\\assets\\playbutton.png", 50.0f, 30.0f, 0.0f, 0.0f);
-    Background bg((char*)"src\\assets\\bg.jpg", 600.0f, 600.0f, 0.0f, 0.0f);
-    Menu menu(&display_w, &display_h);
+    // Background bg((char*)"src\\assets\\bg.jpg", 600.0f, 600.0f, 0.0f, 0.0f);
+    // Menu menu(&display_w, &display_h);
 
-    menu.addButton((char*)"src\\assets\\playbutton.png", 100.0f, 50.0f, 50.0f, 25.0f);
-    menu.addButton((char*)"src\\assets\\quitbutton.png", 100.0f, 50.0f, 50.0f, 300.0f);
+    // menu.addButton((char*)"src\\assets\\playbutton.png", 100.0f, 50.0f, 50.0f, 25.0f);
+    // menu.addButton((char*)"src\\assets\\quitbutton.png", 100.0f, 50.0f, 50.0f, 300.0f);
 
-    Player player((char*)"src\\assets\\player.png", 78.0f, 58.0f, 100.0f, 500.0f);
+    // Square square((char*)"src\\assets\\playbutton.png", 50.0f, 50.0f, 100.0f, 100.0f);
 
-    player.scale(2.0f, 2.0f);
+    // square.scale(2.0f, 2.0f);
+
+    // Player player((char*)"src\\assets\\player.png", 78.0f, 58.0f, 0.0f, 500.0f);
+
+    // player.model = glm::translate(player.model, glm::vec3(200.0f, 0.0f, 0.0f));
+
+    // model = glm::translate(model, glm::vec3(-playerX, -playerY, 0.0f));
+
+    // player.setPosition(500.0f, 500.0f);
+
+    Shader shader("shaders/vertexShader.glsl", "shaders/fragmentShader.glsl");
+    Shader bgShader("shaders/background/bgVertexShader.glsl", "shaders/background/bgFragmentShader.glsl");
+    BackgroundBeta bgBeta((char*)"src\\assets\\bg.jpg");
+    Player player((char*)"src\\assets\\player.png", 78.0f, 58.0f, 0.0f, 500.0f);
 
     glm::mat4 projection = glm::mat4(1.0f);
 
@@ -52,7 +66,7 @@ int main() {
     while (!glfwWindowShouldClose(window)) {
         glfwGetFramebufferSize(window, &display_w, &display_h);
         glViewport(0, 0, display_w, display_h);
-        glfwGetCursorPos(window, &menu.cursor_position_x, &menu.cursor_position_y);
+        // glfwGetCursorPos(window, &menu.cursor_position_x, &menu.cursor_position_y);
 
         player.processInput(window);
 
@@ -62,16 +76,29 @@ int main() {
         glClearColor(0.45f, 0.55f, 0.60f, 1.00f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        shader.use();
-        bg.scale((display_w / bg.backgroundWidth), (display_h / bg.backgroundHeight));
-        bg.setUniformMatrix4fv(&shader, (char*)"model");
-        bg.setProjection(&shader, projection);
-        bg.render(&shader);
+        bgShader.use();
+        bgBeta.render(&bgShader, 0.0f, 0.0f, (float)display_w, (float)display_h, projection);
 
+        shader.use();
         player.update(&shader);
         player.setUniformMatrix4fv(&shader, (char*)"model");
         player.setProjection(&shader, projection);
         player.render(&shader);
+
+        // shader.use();
+        // square.setUniformMatrix4fv(&shader, (char*)"model");
+        // square.setProjection(&shader, projection);
+        // square.animate(&shader);
+        // square.render();
+        // bg.scale((display_w / bg.backgroundWidth), (display_h / bg.backgroundHeight));
+        // bg.setUniformMatrix4fv(&shader, (char*)"model");
+        // bg.setProjection(&shader, projection);
+        // bg.render(&shader);
+
+        // player.update(&shader);
+        // player.setUniformMatrix4fv(&shader, (char*)"model");
+        // player.setProjection(&shader, projection);
+        // player.render(&shader);
 
         // menuShader.use();
         // menu.render(&menuShader, projection);

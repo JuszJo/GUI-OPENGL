@@ -190,7 +190,9 @@ class Player: public Entity {
         }
 
         void move() {
-            model = glm::translate(model, speed);;
+            model = glm::translate(model, speed);
+            playerX += speed.x;
+            playerY += speed.y;
         }
 
         void updatePosition(float newPlayerX, float newPlayerY) {

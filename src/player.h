@@ -14,7 +14,7 @@ class Player: public Entity {
         int stride = 5;
 
     public:
-        unsigned int TBO2, TBO3;
+        unsigned int TBO2, TBO3, TBO4;
 
         float playerWidth, playerHeight, playerX, playerY;
         const char* axis = "origin";
@@ -45,6 +45,12 @@ class Player: public Entity {
 
         STATE currentState = IDLE;
 
+        // float jumpForce = 10.0f;
+        // bool shouldJump = false;
+        // bool canJump = true;
+
+        // float gForce = 1.0f;
+
         // default constructor
         Player() {}
 
@@ -74,6 +80,7 @@ class Player: public Entity {
             loadImage(texturePath, &TBO);
             loadImage((char*)"src\\assets\\playeridle.png", &TBO2);
             loadImage((char*)"src\\assets\\player2.png", &TBO3);
+            loadImage((char*)"src\\assets\\playerup.png", &TBO4);
 
             // idle.TBO = &TBO2;
 
@@ -126,8 +133,12 @@ class Player: public Entity {
             if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
                 
             }
-            else if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-                
+            else if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+                // if(canJump) {
+                //     gForce = 1.0f;
+                //     shouldJump = true;
+                //     canJump = false;
+                // }
             }
             else if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
                 if(currentState != LEFT) currentState = LEFT;
@@ -165,25 +176,25 @@ class Player: public Entity {
             switch (currentState) {
                 case LEFT:
                     // pickAnimation((char*)"left", 8.0f, 4, 0, &TBO3, true);
-                    animation.setCurrentAnimation((char*)"left", 8.0f, 4, 0, &TBO3, true);
-                    speed = glm::vec3(-acceleration, 0.0f, 0.0f);
-                    shouldAnimate = true;
+                    animation.setCurrentAnimation((char*)"left", 8.0f, 4, 2, &TBO3, true);
+                    speed = glm::vec3(-acceleration, speed.y, 0.0f);
+                    animation.shouldAnimate = true;
                     
                     break;
 
                 case RIGHT:
                     // pickAnimation((char*)"right", 8.0f, 4, 0, &TBO, false);
                     animation.setCurrentAnimation((char*)"right", 8.0f, 4, 0, &TBO, false);
-                    speed = glm::vec3(acceleration, 0.0f, 0.0f);
-                    shouldAnimate = true;
+                    speed = glm::vec3(acceleration, speed.y, 0.0f);
+                    animation.shouldAnimate = true;
                     
                     break;
 
                 case IDLE:
                     // pickAnimation((char*)"idle", 11.0f, 4, 1, &TBO2, false);
                     animation.setCurrentAnimation((char*)"idle", 11.0f, 4, 1, &TBO2, false);
-                    speed = glm::vec3(0.0f, 0.0f, 0.0f);
-                    shouldAnimate = true;
+                    speed = glm::vec3(0.0f, speed.y, 0.0f);
+                    animation.shouldAnimate = true;
                     
                     break;
                 
@@ -284,6 +295,7 @@ class Player: public Entity {
         void update(Shader* shader) {
             checkState();
             move();
+            // applyGravity();
             animation.animate();
             // animate(shader);
 

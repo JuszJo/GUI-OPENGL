@@ -38,7 +38,7 @@ int main() {
     menu.addButton((char*)"src\\assets\\playbutton.png", 100.0f, 50.0f, 50.0f, 25.0f);
     menu.addButton((char*)"src\\assets\\quitbutton.png", 100.0f, 50.0f, 50.0f, 300.0f);
 
-    Player player((char*)"src\\assets\\player.png", 78.0f, 58.0f, 100.0f, 200.0f);
+    Player player((char*)"src\\assets\\player.png", 78.0f, 58.0f, 100.0f, 500.0f);
 
     player.scale(2.0f, 2.0f);
 

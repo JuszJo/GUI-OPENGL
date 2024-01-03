@@ -8,6 +8,7 @@
 
 #include "entity.h"
 #include "animation.h"
+#include "gravity.h"
 
 class Player: public Entity {
     private:
@@ -44,6 +45,8 @@ class Player: public Entity {
         };
 
         STATE currentState = IDLE;
+
+        Gravity gravity;
 
         // float jumpForce = 10.0f;
         // bool shouldJump = false;
@@ -293,6 +296,7 @@ class Player: public Entity {
         }
 
         void update(Shader* shader) {
+            gravity.applyGravity(&speed);
             checkState();
             move();
             // applyGravity();

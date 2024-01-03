@@ -7,15 +7,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "entity.h"
-
-struct AnimatedState {
-    char* name;
-    float totalFrames;
-    int animateBuffer;
-    int textureIndex;
-    unsigned int* TBO;
-    bool reversed;
-};
+#include "animation.h"
 
 class Player: public Entity {
     private:
@@ -31,11 +23,13 @@ class Player: public Entity {
 
         float currentFrame = 1.0f;
 
-        AnimatedState idle = {(char*)"idle", 11.0f, 4, 1, nullptr, false};
+        // AnimatedState idle = {(char*)"idle", 11.0f, 4, 1, nullptr, false};
 
-        AnimatedState currentAnimatedState[1];
+        // AnimatedState currentAnimatedState[1];
 
-        int elapsedFrames = 0;
+        // int elapsedFrames = 0;
+
+        Animation animation;
 
         glm::vec3 speed = glm::vec3(0.0f, 0.0f, 0.0f);
 
@@ -81,9 +75,15 @@ class Player: public Entity {
             loadImage((char*)"src\\assets\\playeridle.png", &TBO2);
             loadImage((char*)"src\\assets\\player2.png", &TBO3);
 
-            idle.TBO = &TBO2;
+            // idle.TBO = &TBO2;
 
-            currentAnimatedState[0] = idle;
+            // currentAnimatedState[0] = idle;
+
+            Animation newAnimation((char*)"idle", 11.0f, 4, 1, nullptr, false);
+
+            newAnimation.updateTextureBuffer(&TBO2);
+
+            animation = newAnimation;
         }
 
         void loadImage(char* path, unsigned int* TBO) {
@@ -140,45 +140,48 @@ class Player: public Entity {
             }
         }
 
-        void resetAnimation(AnimatedState currentAnimation) {
-            elapsedFrames = 0;
-            currentFrame = currentAnimation.reversed ? currentAnimation.totalFrames : 1;
-        }
+        // void resetAnimation(AnimatedState currentAnimation) {
+        //     elapsedFrames = 0;
+        //     currentFrame = currentAnimation.reversed ? currentAnimation.totalFrames : 1;
+        // }
 
-        void pickAnimation(char* name, float numberFrames, int animationBuffer, int textureIndex, unsigned int* textureBuffer, bool reversed) {
-            if(currentAnimatedState[0].name != name) {
-                AnimatedState animatedState;
-                animatedState.name = name;
-                animatedState.totalFrames = numberFrames;
-                animatedState.animateBuffer = animationBuffer;
-                animatedState.textureIndex = textureIndex;
-                animatedState.TBO = textureBuffer;
-                animatedState.reversed = reversed;
+        // void pickAnimation(char* name, float numberFrames, int animationBuffer, int textureIndex, unsigned int* textureBuffer, bool reversed) {
+            // if(currentAnimatedState[0].name != name) {
+            //     AnimatedState animatedState;
+            //     animatedState.name = name;
+            //     animatedState.totalFrames = numberFrames;
+            //     animatedState.animateBuffer = animationBuffer;
+            //     animatedState.textureIndex = textureIndex;
+            //     animatedState.TBO = textureBuffer;
+            //     animatedState.reversed = reversed;
 
-                currentAnimatedState[0] = animatedState;
+            //     currentAnimatedState[0] = animatedState;
 
-                resetAnimation(currentAnimatedState[0]);
-            }
-        }
+            //     resetAnimation(currentAnimatedState[0]);
+            // }
+        // }
 
         void checkState() {
             switch (currentState) {
                 case LEFT:
-                    pickAnimation((char*)"left", 8.0f, 4, 0, &TBO3, true);
+                    // pickAnimation((char*)"left", 8.0f, 4, 0, &TBO3, true);
+                    animation.setCurrentAnimation((char*)"left", 8.0f, 4, 0, &TBO3, true);
                     speed = glm::vec3(-acceleration, 0.0f, 0.0f);
                     shouldAnimate = true;
                     
                     break;
 
                 case RIGHT:
-                    pickAnimation((char*)"right", 8.0f, 4, 0, &TBO, false);
+                    // pickAnimation((char*)"right", 8.0f, 4, 0, &TBO, false);
+                    animation.setCurrentAnimation((char*)"right", 8.0f, 4, 0, &TBO, false);
                     speed = glm::vec3(acceleration, 0.0f, 0.0f);
                     shouldAnimate = true;
                     
                     break;
 
                 case IDLE:
-                    pickAnimation((char*)"idle", 11.0f, 4, 1, &TBO2, false);
+                    // pickAnimation((char*)"idle", 11.0f, 4, 1, &TBO2, false);
+                    animation.setCurrentAnimation((char*)"idle", 11.0f, 4, 1, &TBO2, false);
                     speed = glm::vec3(0.0f, 0.0f, 0.0f);
                     shouldAnimate = true;
                     
@@ -242,37 +245,38 @@ class Player: public Entity {
             updateSize(scaledWidth, scaledHeight);
         }
 
-        void animate(Shader* shader) {
-            if(shouldAnimate) {
-                if(elapsedFrames % currentAnimatedState[0].animateBuffer == 0) {
-                    if(!currentAnimatedState[0].reversed) animateForward(currentAnimatedState[0]);
-                    else animateReversed(currentAnimatedState[0]);
+        // void animate(Shader* shader) {
+        //     if(shouldAnimate) {
+        //         if(elapsedFrames % currentAnimatedState[0].animateBuffer == 0) {
+        //             if(!currentAnimatedState[0].reversed) animateForward(currentAnimatedState[0]);
+        //             else animateReversed(currentAnimatedState[0]);
 
-                    elapsedFrames = 0;
-                }
+        //             elapsedFrames = 0;
+        //         }
 
-                ++elapsedFrames;
-            }
-            else {
-                resetAnimation(currentAnimatedState[0]);
-            }
-        }
+        //         ++elapsedFrames;
+        //     }
+        //     else {
+        //         resetAnimation(currentAnimatedState[0]);
+        //     }
+        // }
 
-        void animateForward(AnimatedState currentAnimation) {
-            if(currentFrame >= currentAnimation.totalFrames) currentFrame = 1;
-            else ++currentFrame;
-        }
+        // void animateForward(AnimatedState currentAnimation) {
+        //     if(currentFrame >= currentAnimation.totalFrames) currentFrame = 1;
+        //     else ++currentFrame;
+        // }
 
-        void animateReversed(AnimatedState currentAnimation) {
-            if(currentFrame <= 1) currentFrame = currentAnimation.totalFrames;
-            else --currentFrame;
-        }
+        // void animateReversed(AnimatedState currentAnimation) {
+        //     if(currentFrame <= 1) currentFrame = currentAnimation.totalFrames;
+        //     else --currentFrame;
+        // }
 
         void render(Shader* shader) {
             // std::cout << currentAnimatedState[0].name << "\t" << currentAnimatedState[0].totalFrames << "\t" << currentFrame <<std::endl;
-            setUniform1f(shader, (char*)"totalFrames", currentAnimatedState[0].totalFrames);
-            setUniform1f(shader, (char*)"currentFrame", currentFrame);
-            glBindTexture(GL_TEXTURE_2D, *currentAnimatedState[0].TBO);
+            // setUniform1f(shader, (char*)"totalFrames", currentAnimatedState[0].totalFrames);
+            setUniform1f(shader, (char*)"totalFrames", animation.currentAnimatedState[0].totalFrames);
+            setUniform1f(shader, (char*)"currentFrame", animation.currentFrame);
+            glBindTexture(GL_TEXTURE_2D, *animation.currentAnimatedState[0].TBO);
             glBindVertexArray(VAO);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
         }
@@ -280,7 +284,8 @@ class Player: public Entity {
         void update(Shader* shader) {
             checkState();
             move();
-            animate(shader);
+            animation.animate();
+            // animate(shader);
 
             // std::cout << currentAnimatedState[0].name << std::endl;
         }

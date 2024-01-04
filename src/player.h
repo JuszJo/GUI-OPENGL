@@ -139,6 +139,9 @@ class Player: public Entity {
             else if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
                 if(currentState != RIGHT) currentState = RIGHT;
             }
+            // else if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+            //     if(currentState != DOWN) currentState = DOWN;
+            // }
             else {
                 currentState = IDLE;
             }
@@ -182,6 +185,14 @@ class Player: public Entity {
                     animation.shouldAnimate = true;
                     
                     break;
+
+                // case DOWN:
+                //     // pickAnimation((char*)"right", 8.0f, 4, 0, &TBO, false);
+                //     // animation.setCurrentAnimation((char*)"right", 8.0f, 4, 0, &TBO, false);
+                //     speed = glm::vec3(0.0f, -1.0f, 0.0f);
+                //     // animation.shouldAnimate = true;
+                    
+                //     break;
 
                 case IDLE:
                     // pickAnimation((char*)"idle", 11.0f, 4, 1, &TBO2, false);
@@ -284,8 +295,17 @@ class Player: public Entity {
             if(info.collidableBlockIndex != -1) {
                 CollidableBlock currentBlock = collision.blocks[info.collidableBlockIndex];
 
-                float bottom = abs(playerY - currentBlock.position_y + currentBlock.height);
-                float top = abs(playerY + playerHeight > currentBlock.position_y);
+                float bottom = abs(playerY - (currentBlock.position_y + currentBlock.height));
+                float top = abs((playerY + playerHeight) - currentBlock.position_y);
+
+                float left = abs(playerX - (currentBlock.position_x + currentBlock.width));
+                float right = abs((playerX + playerWidth) - currentBlock.position_x);
+
+                // std::cout << bottom << "\t" << top << std::endl;
+                // std::cout << collision.getCollideAxisY(bottom, top) << std::endl;
+                // std::cout << left << "\t" << right << std::endl;
+                std::cout << collision.getCollideAxisX(left, right) << std::endl;
+                std::cout << info.collidableBlockIndex << std::endl;
 
                 if(collision.getCollideAxisY(bottom, top) == (char*)"bottom") {
                     // gravity.stopGravity();

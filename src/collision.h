@@ -21,8 +21,8 @@ class Collision {
 
         glm::mat4 model = glm::mat4(1.0f);
 
-        CollidableBlock block1 = {0.0f, 0.0f, 50.0f, 50.0f};
-        CollidableBlock block2 = {50.0f, 0.0f, 50.0f, 50.0f};
+        CollidableBlock block1 = {0.0f, 0.0f, 100.0f, 100.0f};
+        CollidableBlock block2 = {100.0f, 100.0f, 100.0f, 100.0f};
 
         CollidableBlock blocks[2] = {
             block1,
@@ -62,12 +62,12 @@ class Collision {
             glBindBuffer(GL_ARRAY_BUFFER, 0);
         }
 
-        void getCollideAxisX() {
-
+        char* getCollideAxisX(float left, float right) {
+            return left > right ? (char*)"left" : (char*)"right";
         }
 
         char* getCollideAxisY(float bottom, float top) {
-            return bottom > top ? (char*)"bottom" : (char*)"top";
+            return bottom < top ? (char*)"bottom" : (char*)"top";
         }
 
         bool didCollide(float position_x, float position_y, float width, float height, CollidableBlock currentBlock) {
@@ -105,7 +105,7 @@ class Collision {
         void render(Shader* shader, glm::mat4 projection, glm::mat4 view) {
             for(CollidableBlock block : blocks) {
                 model = glm::mat4(1.0f);
-                model = glm::translate(model, glm::vec3(block.position_x, 0.0f, 0.0f));
+                model = glm::translate(model, glm::vec3(block.position_x, block.position_y, 0.0f));
                 glUniformMatrix4fv(glGetUniformLocation(shader -> shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
                 glUniformMatrix4fv(glGetUniformLocation(shader -> shaderProgram, "view"), 1, GL_FALSE, glm::value_ptr(view));
                 glUniformMatrix4fv(glGetUniformLocation(shader -> shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));

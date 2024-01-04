@@ -18,7 +18,7 @@ struct CollisionInfo {
 
 class Hitbox: public Entity {
     private:
-    int stride = 6;
+    int stride = 7;
 
     public:
         float position_x, position_y, width, height;
@@ -43,10 +43,10 @@ class Hitbox: public Entity {
 
         void render(Shader* shader, glm::mat4 projection, glm::mat4 view) {
             float vertices[] = {
-                position_x, position_y, 0.0f, 0.3f, 0.3f, 0.3f,
-                position_x + width, position_y, 0.0f, 0.3f, 0.3f, 0.3f,
-                position_x, position_y + height, 0.0f, 0.3f, 0.3f, 0.3f,
-                position_x + width, position_y + height, 0.0f, 0.3f, 0.3f, 0.3f,
+                position_x, position_y, 0.0f, 0.3f, 0.3f, 0.3f, 0.9f,
+                position_x + width, position_y, 0.0f, 0.3f, 0.3f, 0.3f, 0.9f,
+                position_x, position_y + height, 0.0f, 0.3f, 0.3f, 0.3f, 0.9f,
+                position_x + width, position_y + height, 0.0f, 0.3f, 0.3f, 0.3f, 0.9f
             };
 
             genVertexandBuffers(&VAO, &VBO);
@@ -56,7 +56,7 @@ class Hitbox: public Entity {
             handleVertexBufferObject(VBO, vertices, verticeSize);
 
             handleVertexArrayObject(0, 3, stride, 0);
-            handleVertexArrayObject(1, 3, stride, 3);
+            handleVertexArrayObject(1, 4, stride, 3);
 
             shader -> use();
 

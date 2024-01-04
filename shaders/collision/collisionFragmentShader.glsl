@@ -1,6 +1,6 @@
 #version 330 core
 
-in vec3 color;
+in vec4 color;
 
 out vec4 FragColor;
 
@@ -12,5 +12,5 @@ void main() {
     // FrameCoord = vec2(FrameCoord.x + ((currentFrame - 1.0) * (frameWidth)), FrameCoord.y);
 
     // FragColor = texture(myTexture, textureCoord);
-    FragColor = vec4(color, 1.0);
+    FragColor = vec4(color);
 }

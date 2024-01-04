@@ -39,10 +39,10 @@ class Collision {
             // bgHeight = height;
 
             float vertices[] = {
-                x, y, 0.0f, 0.9f, 0.3f, 0.3f,
-                x + width, y, 0.0f, 0.9f, 0.3f, 0.3f,
-                x, y + height, 0.0f, 0.9f, 0.3f, 0.3f,
-                x + width, y + height, 0.0f, 0.9f, 0.3f, 0.3f
+                x, y, 0.0f, 0.9f, 0.3f, 0.3f, 1.0f,
+                x + width, y, 0.0f, 0.9f, 0.3f, 0.3f, 1.0f,
+                x, y + height, 0.0f, 0.9f, 0.3f, 0.3f, 1.0f,
+                x + width, y + height, 0.0f, 0.9f, 0.3f, 0.3f, 1.0f
             };
 
             glGenVertexArrays(1, &VAO);
@@ -53,10 +53,10 @@ class Collision {
             glBindBuffer(GL_ARRAY_BUFFER, VBO);
             glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), nullptr);
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), nullptr);
             glEnableVertexAttribArray(0);
 
-            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+            glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(3 * sizeof(float)));
             glEnableVertexAttribArray(1);
 
             glBindVertexArray(0);

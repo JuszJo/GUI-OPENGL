@@ -156,7 +156,7 @@ class Player: public Entity {
 
             animation = newAnimation;
 
-            Hitbox newHitbox(x, y, width, height);
+            Hitbox newHitbox(x, y, 30.0f, height);
 
             newHitbox.defineOffset(20.0f, 0.0f);
 

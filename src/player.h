@@ -33,7 +33,7 @@ class Player: public Entity {
 
         glm::vec3 speed = glm::vec3(0.0f, 0.0f, 0.0f);
 
-        float acceleration = 1.0f;
+        float acceleration = 2.0f;
 
         enum STATE {
             UP,
@@ -191,7 +191,7 @@ class Player: public Entity {
                     animation.setCurrentAnimation((char*)"right", 8.0f, 4, 0, &TBO, false);
                     speed = glm::vec3(acceleration, speed.y, 0.0f);
                     animation.shouldAnimate = true;
-                    camera -> cameraPos += glm::normalize(glm::cross(camera -> cameraFaceDirection, camera -> cameraUp)) * 1.0f;
+                    camera -> cameraPos += glm::normalize(glm::cross(camera -> cameraFaceDirection, camera -> cameraUp)) * camera -> cameraSpeed;
                     
                     break;
 

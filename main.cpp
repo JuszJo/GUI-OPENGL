@@ -16,6 +16,7 @@ struct Camera {
     glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 1.0f);
     glm::vec3 cameraFaceDirection = glm::vec3(0.0f, 0.0f, -1.0f);
     glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+    float cameraSpeed = 2.0f;
 };
 
 #include "src/background.h"
@@ -27,7 +28,7 @@ void processInput(GLFWwindow* window) {
     if(glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
     }
-    const float cameraSpeed = 1.0f; // adjust accordingly
+    // const float cameraSpeed = 1.0f; // adjust accordingly
     // forward
     // if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) cameraPos += cameraSpeed * cameraFaceDirection;
     // // backward

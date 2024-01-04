@@ -9,55 +9,10 @@
 #include "entity.h"
 
 class BackgroundBeta {
-    public:
-        unsigned int VAO, VBO, TBO;
-
-        BackgroundBeta(char* path) {
-            int width, height, nChannels;
-
-            stbi_uc* imageData = stbi_load(path, &width, &height, &nChannels, 0);
-
-            if(!imageData) {
-                const char* reason = stbi_failure_reason();
-
-                std::cout << reason << std::endl;
-            }
-
-            glGenTextures(1, &TBO);
-            glBindTexture(GL_TEXTURE_2D, TBO);
-
-            // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-            // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-            // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-            // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-            
-            if(nChannels > 3) {
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
-            }
-            else {
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, imageData);
-            }
-
-            glGenerateMipmap(GL_TEXTURE_2D);
-
-            stbi_image_free(imageData);
-        }
-
-        void render(Shader* shader, float x, float y, float width, float height, glm::mat4 projection) {
-            glm::mat4 model = glm::mat4(1.0f);
-
-            // std::cout << x << "\t" << y << std::endl;
-            // std::cout << width << "\t" << height << std::endl;
-
-            // float vertices[] = {
-            //     x, y, 0.0f,
-            //     x + width, y, 0.0f,
-            //     x, y + height, 0.0f,
-            //     x + width, y + height, 0.0f
-            // };
+    private: 
+        void oldRender(Shader* shader, float x, float y, float width, float height, glm::mat4 projection) {
+            std::cout << x << "\t" << y << std::endl;
+            std::cout << width << "\t" << height << std::endl;
 
             float vertices[] = {
                 x, y, 0.0f, 0.0f, 1.0f,
@@ -74,8 +29,43 @@ class BackgroundBeta {
             glBindBuffer(GL_ARRAY_BUFFER, VBO);
             glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-            // glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
-            // glEnableVertexAttribArray(0);
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), nullptr);
+            glEnableVertexAttribArray(0);
+
+            glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+            glEnableVertexAttribArray(1);
+
+            glBindVertexArray(0);
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+        }
+
+    public:
+        unsigned int VAO, VBO, TBO;
+
+        float position_x, position_y, bgWidth, bgHeight;
+
+        glm::mat4 model = glm::mat4(1.0f);
+
+        BackgroundBeta(char* path, float x, float y, float width, float height) {
+            position_x = x;
+            position_y = y;
+            bgWidth = width;
+            bgHeight = height;
+
+            float vertices[] = {
+                x, y, 0.0f, 0.0f, 1.0f,
+                x + width, y, 0.0f, 1.0f, 1.0f,
+                x, y + height, 0.0f, 0.0f, 0.0f,
+                x + width, y + height, 0.0f, 1.0f, 0.0f
+            };
+
+            glGenVertexArrays(1, &VAO);
+            glGenBuffers(1, &VBO);
+
+            glBindVertexArray(VAO);
+
+            glBindBuffer(GL_ARRAY_BUFFER, VBO);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), nullptr);
             glEnableVertexAttribArray(0);
@@ -86,9 +76,55 @@ class BackgroundBeta {
             glBindVertexArray(0);
             glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-            // glUniformMatrix4fv(glGetUniformLocation(shader -> shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
-            glUniformMatrix4fv(glGetUniformLocation(shader -> shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+            loadImage(path, &TBO);
+        }
 
+        void loadImage(char* path, unsigned int* TBO) {
+            int width, height, nChannels;
+
+            stbi_uc* imageData = stbi_load(path, &width, &height, &nChannels, 0);
+
+            if(!imageData) {
+                const char* reason = stbi_failure_reason();
+
+                std::cout << reason << std::endl;
+            }
+
+            glGenTextures(1, TBO);
+            glBindTexture(GL_TEXTURE_2D, *TBO);
+
+            // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            if(nChannels > 3) {
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
+            }
+            else {
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, imageData);
+            }
+
+            glGenerateMipmap(GL_TEXTURE_2D);
+
+            stbi_image_free(imageData);
+        }
+
+        void experimentalScale(float scaleFactorX, float scaleFactorY) {
+            // model = glm::translate(model, glm::vec3(backgroundX, backgroundY, 0.0f));
+
+            model = glm::scale(model, glm::vec3(scaleFactorX, scaleFactorY, 1.0f));
+
+            bgWidth *= scaleFactorX;
+            bgHeight *= scaleFactorY;
+
+            // model = glm::translate(model, glm::vec3(-backgroundX, -backgroundY, 0.0f));
+        }
+
+        
+        void render(Shader* shader, glm::mat4 projection) {
             glBindTexture(GL_TEXTURE_2D, TBO);
             glBindVertexArray(VAO);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);

@@ -13,6 +13,25 @@
 #include "src/background.h"
 #include "src/player.h"
 
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f,  1.0f);
+glm::vec3 cameraFaceDirection = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f,  0.0f);
+
+void processInput(GLFWwindow* window) {
+    if(glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) {
+        glfwSetWindowShouldClose(window, true);
+    }
+    const float cameraSpeed = 1.0f; // adjust accordingly
+    // forward
+    // if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) cameraPos += cameraSpeed * cameraFaceDirection;
+    // // backward
+    // if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) cameraPos -= cameraSpeed * cameraFaceDirection;
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) cameraPos -= glm::normalize(glm::cross(cameraFaceDirection, cameraUp)) * cameraSpeed;
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) cameraPos += glm::normalize(glm::cross(cameraFaceDirection, cameraUp)) * cameraSpeed;
+
+    // std::cout << cameraPos.x << "\t" << cameraPos.y << std::endl;
+}
+
 int main() {
     if (!glfwInit()) return 1;
 
@@ -53,10 +72,11 @@ int main() {
 
     Shader shader("shaders/vertexShader.glsl", "shaders/fragmentShader.glsl");
     Shader bgShader("shaders/background/bgVertexShader.glsl", "shaders/background/bgFragmentShader.glsl");
-    BackgroundBeta bgBeta((char*)"src\\assets\\bg.jpg");
-    Player player((char*)"src\\assets\\player.png", 78.0f, 58.0f, 0.0f, 500.0f);
+    BackgroundBeta bgBeta((char*)"src\\assets\\bg.jpg", 0.0f, 0.0f, 600.0f, 600.0f);
+    Player player((char*)"src\\assets\\player.png", 0.0f, 0.0f, 78.0f, 58.0f);
 
     glm::mat4 projection = glm::mat4(1.0f);
+    glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFaceDirection, cameraUp);
 
     glfwSwapInterval(1);
 
@@ -68,24 +88,32 @@ int main() {
         glViewport(0, 0, display_w, display_h);
         // glfwGetCursorPos(window, &menu.cursor_position_x, &menu.cursor_position_y);
 
-        player.processInput(window);
+        projection = glm::ortho(0.0f, (float)display_w, 0.0f, (float)display_h, -10.0f, 10.0f);
+        view = glm::lookAt(cameraPos, cameraPos + cameraFaceDirection, cameraUp);
 
-        projection = glm::ortho(0.0f, (float)display_w, 0.0f, (float)display_h, -1.0f, 1.0f);
+        // player.processInput(window);
+        processInput(window);
 
         glfwPollEvents();
         glClearColor(0.45f, 0.55f, 0.60f, 1.00f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         bgShader.use();
-        bgBeta.render(&bgShader, 0.0f, 0.0f, (float)display_w, (float)display_h, projection);
+        // bgBeta.experimentalScale((float)(display_w / bgBeta.bgWidth), (float)(display_h / bgBeta.bgHeight));
+        glUniformMatrix4fv(glGetUniformLocation(bgShader.shaderProgram, "view"), 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(glGetUniformLocation(bgShader.shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+        glUniformMatrix4fv(glGetUniformLocation(bgShader.shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(bgBeta.model));
+        bgBeta.render(&bgShader, projection);
 
         shader.use();
+        glUniformMatrix4fv(glGetUniformLocation(shader.shaderProgram, "view"), 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(glGetUniformLocation(shader.shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+        glUniformMatrix4fv(glGetUniformLocation(shader.shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(player.model));
         player.update(&shader);
-        player.setUniformMatrix4fv(&shader, (char*)"model");
-        player.setProjection(&shader, projection);
         player.render(&shader);
 
         // shader.use();
+        // glUniformMatrix4fv(glGetUniformLocation(shader.shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(player.model));
         // square.setUniformMatrix4fv(&shader, (char*)"model");
         // square.setProjection(&shader, projection);
         // square.animate(&shader);

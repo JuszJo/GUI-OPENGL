@@ -51,11 +51,11 @@ class Player: public Entity {
         // default constructor
         Player() {}
 
-        Player(char* texturePath, float width, float height, float x, float y) {
-            playerWidth = width;
-            playerHeight = height;
+        Player(char* texturePath, float x, float y, float width, float height) {
             playerX = x;
             playerY = y;
+            playerWidth = width;
+            playerHeight = height;
 
             float vertices[20] = {
                 x, y, 0.0f, 0.0f, 1.0f,

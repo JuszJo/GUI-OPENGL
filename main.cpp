@@ -111,7 +111,10 @@ int main() {
         glUniformMatrix4fv(glGetUniformLocation(shader.shaderProgram, "view"), 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(glGetUniformLocation(shader.shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(player.model));
         player.update(&shader);
-        player.render(&shader, &cShader, projection, view);
+        player.render(&shader);
+
+        cShader.use();
+        player.collision.render(&cShader, projection, view);
 
         // shader.use();
         // glUniformMatrix4fv(glGetUniformLocation(shader.shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(player.model));

@@ -103,7 +103,6 @@ class Collision {
         }
 
         void render(Shader* shader, glm::mat4 projection, glm::mat4 view) {
-            shader -> use();
             for(CollidableBlock block : blocks) {
                 model = glm::mat4(1.0f);
                 model = glm::translate(model, glm::vec3(block.position_x, 0.0f, 0.0f));

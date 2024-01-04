@@ -17,14 +17,14 @@ class Collision {
 
         glm::mat4 model = glm::mat4(1.0f);
 
-        CollidableBlock block1 = {0.0f, 0.0f, 100.0f, 100.0f};
-        CollidableBlock block2 = {100.0f, 0.0f, 100.0f, 100.0f};
-        CollidableBlock block3 = {200.0f, 100.0f, 100.0f, 100.0f};
+        CollidableBlock block1 = {0.0f, 0.0f, 3000.0f, 200.0f};
+        // CollidableBlock block2 = {100.0f, 0.0f, 100.0f, 100.0f};
+        // CollidableBlock block3 = {200.0f, 100.0f, 100.0f, 100.0f};
 
-        CollidableBlock blocks[3] = {
-            block1,
+        CollidableBlock blocks[1] = {
+            block1/* ,
             block2,
-            block3
+            block3 */
         };
 
         float x = block1.position_x;

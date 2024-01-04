@@ -25,6 +25,8 @@ class Player: public Entity {
 
         float playerWidth, playerHeight, playerX, playerY;
 
+        Camera* camera = nullptr;
+
         const char* axis = "origin";
 
         Animation animation;
@@ -189,6 +191,7 @@ class Player: public Entity {
                     animation.setCurrentAnimation((char*)"right", 8.0f, 4, 0, &TBO, false);
                     speed = glm::vec3(acceleration, speed.y, 0.0f);
                     animation.shouldAnimate = true;
+                    camera -> cameraPos += glm::normalize(glm::cross(camera -> cameraFaceDirection, camera -> cameraUp)) * 1.0f;
                     
                     break;
 

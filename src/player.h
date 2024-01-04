@@ -280,16 +280,6 @@ class Player: public Entity {
         //     else --currentFrame;
         // }
 
-        void render(Shader* shader) {
-            // std::cout << currentAnimatedState[0].name << "\t" << currentAnimatedState[0].totalFrames << "\t" << currentFrame <<std::endl;
-            // setUniform1f(shader, (char*)"totalFrames", currentAnimatedState[0].totalFrames);
-            setUniform1f(shader, (char*)"totalFrames", animation.currentAnimatedState[0].totalFrames);
-            setUniform1f(shader, (char*)"currentFrame", animation.currentFrame);
-            glBindTexture(GL_TEXTURE_2D, *animation.currentAnimatedState[0].TBO);
-            glBindVertexArray(VAO);
-            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-        }
-
         void collisionResponse(CollisionInfo info) {
             if(info.collidableBlockIndex != -1) {
                 CollidableBlock currentBlock = collision.blocks[info.collidableBlockIndex];
@@ -305,6 +295,18 @@ class Player: public Entity {
                     setPosition(playerX, currentBlock.position_y + currentBlock.height);
                 }
             }
+        }
+
+        void render(Shader* shader, Shader* cShader, glm::mat4 projection, glm::mat4 view) {
+            // std::cout << currentAnimatedState[0].name << "\t" << currentAnimatedState[0].totalFrames << "\t" << currentFrame <<std::endl;
+            // setUniform1f(shader, (char*)"totalFrames", currentAnimatedState[0].totalFrames);
+            setUniform1f(shader, (char*)"totalFrames", animation.currentAnimatedState[0].totalFrames);
+            setUniform1f(shader, (char*)"currentFrame", animation.currentFrame);
+            glBindTexture(GL_TEXTURE_2D, *animation.currentAnimatedState[0].TBO);
+            glBindVertexArray(VAO);
+            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+            collision.render(cShader, projection, view);
         }
 
         void update(Shader* shader) {

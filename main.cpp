@@ -91,8 +91,8 @@ int main() {
 
     glfwSwapInterval(1);
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    // glEnable(GL_BLEND);
+    // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     while (!glfwWindowShouldClose(window)) {
         glfwGetFramebufferSize(window, &display_w, &display_h);
@@ -115,12 +115,12 @@ int main() {
         glUniformMatrix4fv(glGetUniformLocation(bgShader.shaderProgram, "view"), 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(glGetUniformLocation(bgShader.shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(bgBeta.model));
         bgBeta.render(&bgShader, projection);
-
+        
         shader.use();
+        player.update(&shader);
         glUniformMatrix4fv(glGetUniformLocation(shader.shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
         glUniformMatrix4fv(glGetUniformLocation(shader.shaderProgram, "view"), 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(glGetUniformLocation(shader.shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(player.model));
-        player.update(&shader);
         player.render(&shader);
 
         cShader.use();

@@ -34,6 +34,11 @@ class Hitbox: public Entity {
             height = h;
         }
 
+        void updateAxis(float x, float y) {
+            position_x = x;
+            position_y = y;
+        }
+
         void update(float x, float y, float w, float h) {
             position_x = x;
             position_y = y;
@@ -142,7 +147,7 @@ class Player: public Entity {
 
             animation = newAnimation;
 
-            Hitbox newHitbox(x, y, width / 2.0f, height);
+            Hitbox newHitbox(x, y, width, height);
 
             hitbox = newHitbox;
         }
@@ -282,18 +287,19 @@ class Player: public Entity {
 
                 if(collision.didCollide(position_x, position_y, width, height, currentBlock)) {
                     // collisionResponse(currentBlock, hitbox.position_x, hitbox.position_y, hitbox.width, hitbox.height);
-                    collisionResponse(currentBlock, playerX, playerY, playerWidth, playerHeight);
+                    // collisionResponse(currentBlock, playerX, playerY, playerWidth, playerHeight);
+                    collisionResponse(currentBlock, position_x, position_y, width, height);
                 }
             }
         }
 
-        void collisionResponse(CollidableBlock currentBlock, float playerX, float playerY, float playerWidth, float playerHeight) {
+        void collisionResponse(CollidableBlock currentBlock, float x, float y, float width, float height) {
             // referse to player bottom and top and left and right
-            float bottom = (float)abs(playerY - (currentBlock.position_y + currentBlock.height));
-            float top = (float)abs((playerY + playerHeight) - currentBlock.position_y);
+            float bottom = (float)abs(y - (currentBlock.position_y + currentBlock.height));
+            float top = (float)abs((y + height) - currentBlock.position_y);
 
-            float left = (float)abs(playerX - (currentBlock.position_x + currentBlock.width));
-            float right = (float)abs((playerX + playerWidth) - currentBlock.position_x);
+            float left = (float)abs(x - (currentBlock.position_x + currentBlock.width));
+            float right = (float)abs((x + width) - currentBlock.position_x);
 
             // std::cout << bottom << "\t" << top << std::endl;
             // std::cout << collision.getCollideAxisY(bottom, top) << std::endl;
@@ -310,21 +316,26 @@ class Player: public Entity {
             if(final.side == (char*)"bottom") {
                 speed.y = 0.0f;
 
-                setPosition(playerX, currentBlock.position_y + currentBlock.height);
+                setPosition(this -> playerX, currentBlock.position_y + currentBlock.height);
+                hitbox.updateAxis(this -> playerX, currentBlock.position_y + currentBlock.height);
             }
             if(final.side == (char*)"right") {
                 speed.x = 0.0f;
 
-                setPosition(currentBlock.position_x - playerWidth, playerY);
+                setPosition(currentBlock.position_x - playerWidth, this -> playerY);
+                hitbox.updateAxis(currentBlock.position_x - playerWidth, this -> playerY);
             }
         }
 
         void render(Shader* shader) {
+            // hitbox.update(playerX, playerY, playerWidth, playerHeight);
             setUniform1f(shader, (char*)"totalFrames", animation.currentAnimatedState[0].totalFrames);
             setUniform1f(shader, (char*)"currentFrame", animation.currentFrame);
             glBindTexture(GL_TEXTURE_2D, *animation.currentAnimatedState[0].TBO);
             glBindVertexArray(VAO);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+            // hitbox.update(playerX, playerY, playerWidth, playerHeight);
         }
 
         void update(Shader* shader) {
@@ -332,8 +343,11 @@ class Player: public Entity {
             checkState();
             move();
             animation.animate();
-            checkCollision(playerX, playerY, playerWidth, playerHeight);
-            hitbox.update(playerX, playerY, playerWidth / 2.0f, playerHeight);
+            hitbox.update(playerX, playerY, playerWidth, playerHeight);
+            // checkCollision(playerX, playerY, playerWidth, playerHeight);
+            checkCollision(hitbox.position_x, hitbox.position_y, hitbox.width, hitbox.height);
+            hitbox.update(playerX, playerY, playerWidth, playerHeight);
+            // hitbox.update(playerX, playerY, playerWidth / 2.0f, playerHeight);
         }
 };
 

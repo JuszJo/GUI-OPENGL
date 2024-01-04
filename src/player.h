@@ -158,7 +158,7 @@ class Player: public Entity {
 
             Hitbox newHitbox(x, y, 30.0f, height);
 
-            newHitbox.defineOffset(20.0f, 0.0f);
+            newHitbox.defineOffset(18.0f, 10.0f);
 
             hitbox = newHitbox;
         }
@@ -327,7 +327,7 @@ class Player: public Entity {
             if(final.side == (char*)"bottom") {
                 speed.y = 0.0f;
 
-                setPosition(this -> playerX, currentBlock.position_y + currentBlock.height);
+                setPosition(this -> playerX, currentBlock.position_y + currentBlock.height - hitbox.y_offset);
                 hitbox.updateAxis(this -> playerX, currentBlock.position_y + currentBlock.height);
             }
             if(final.side == (char*)"right") {

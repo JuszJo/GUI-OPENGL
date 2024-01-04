@@ -21,8 +21,8 @@ class Collision {
 
         glm::mat4 model = glm::mat4(1.0f);
 
-        CollidableBlock block1 = {0.0f, 500.0f, 50.0f, 50.0f};
-        CollidableBlock block2 = {50.0f, 500.0f, 50.0f, 50.0f};
+        CollidableBlock block1 = {0.0f, 0.0f, 50.0f, 50.0f};
+        CollidableBlock block2 = {50.0f, 0.0f, 50.0f, 50.0f};
 
         CollidableBlock blocks[2] = {
             block1,

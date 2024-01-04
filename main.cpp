@@ -74,7 +74,7 @@ int main() {
     Shader bgShader("shaders/background/bgVertexShader.glsl", "shaders/background/bgFragmentShader.glsl");
     Shader cShader("shaders/collision/collisionVertexShader.glsl", "shaders/collision/collisionFragmentShader.glsl");
     BackgroundBeta bgBeta((char*)"src\\assets\\bg.jpg", 0.0f, 0.0f, 600.0f, 600.0f);
-    Player player((char*)"src\\assets\\player.png", 0.0f, 0.0f, 78.0f, 58.0f);
+    Player player((char*)"src\\assets\\player.png", 0.0f, 500.0f, 78.0f, 58.0f);
 
     glm::mat4 projection = glm::mat4(1.0f);
     glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFaceDirection, cameraUp);

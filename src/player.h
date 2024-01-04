@@ -288,7 +288,7 @@ class Player: public Entity {
                 float top = abs(playerY + playerHeight > currentBlock.position_y);
 
                 if(collision.getCollideAxisY(bottom, top) == (char*)"bottom") {
-                    gravity.stopGravity();
+                    // gravity.stopGravity();
 
                     speed.y = 0;
 
@@ -310,12 +310,12 @@ class Player: public Entity {
         }
 
         void update(Shader* shader) {
-            // gravity.applyGravity(&speed);
+            gravity.applyGravity(&speed);
             checkState();
             move();
             animation.animate();
-            // CollisionInfo info = collision.checkCollision(playerX, playerY, playerWidth, playerHeight);
-            // collisionResponse(info);
+            CollisionInfo info = collision.checkCollision(playerX, playerY, playerWidth, playerHeight);
+            collisionResponse(info);
         }
 };
 

@@ -33,8 +33,8 @@ void processInput(GLFWwindow* window) {
     // if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) cameraPos += cameraSpeed * cameraFaceDirection;
     // // backward
     // if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) cameraPos -= cameraSpeed * cameraFaceDirection;
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) camera.cameraPos -= glm::normalize(glm::cross(camera.cameraFaceDirection, camera.cameraUp)) * cameraSpeed;
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) camera.cameraPos += glm::normalize(glm::cross(camera.cameraFaceDirection, camera.cameraUp)) * cameraSpeed;
+    // if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) camera.cameraPos -= glm::normalize(glm::cross(camera.cameraFaceDirection, camera.cameraUp)) * cameraSpeed;
+    // if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) camera.cameraPos += glm::normalize(glm::cross(camera.cameraFaceDirection, camera.cameraUp)) * cameraSpeed;
 
     // std::cout << cameraPos.x << "\t" << cameraPos.y << std::endl;
 }

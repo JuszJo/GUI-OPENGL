@@ -22,6 +22,8 @@ class Hitbox: public Entity {
 
     public:
         float position_x, position_y, width, height;
+        float x_offset = 0.0f; 
+        float y_offset = 0.0f;
 
         glm::mat4 model = glm::mat4(1.0f);
 
@@ -34,9 +36,16 @@ class Hitbox: public Entity {
             height = h;
         }
 
+        void defineOffset(float xAxis, float yAxis) {
+            x_offset = xAxis;
+            y_offset = yAxis;
+        }
+
         void updateAxis(float x, float y) {
             position_x = x;
             position_y = y;
+            position_x += x_offset;
+            position_y += y_offset;
         }
 
         void update(float x, float y, float w, float h) {
@@ -148,6 +157,8 @@ class Player: public Entity {
             animation = newAnimation;
 
             Hitbox newHitbox(x, y, width, height);
+
+            newHitbox.defineOffset(20.0f, 0.0f);
 
             hitbox = newHitbox;
         }
@@ -322,8 +333,8 @@ class Player: public Entity {
             if(final.side == (char*)"right") {
                 speed.x = 0.0f;
 
-                setPosition(currentBlock.position_x - playerWidth, this -> playerY);
-                hitbox.updateAxis(currentBlock.position_x - playerWidth, this -> playerY);
+                setPosition(currentBlock.position_x - width - hitbox.x_offset, this -> playerY);
+                hitbox.updateAxis(currentBlock.position_x - width, this -> playerY);
             }
         }
 
@@ -343,11 +354,10 @@ class Player: public Entity {
             checkState();
             move();
             animation.animate();
-            hitbox.update(playerX, playerY, playerWidth, playerHeight);
+            hitbox.updateAxis(playerX, playerY);
             // checkCollision(playerX, playerY, playerWidth, playerHeight);
             checkCollision(hitbox.position_x, hitbox.position_y, hitbox.width, hitbox.height);
-            hitbox.update(playerX, playerY, playerWidth, playerHeight);
-            // hitbox.update(playerX, playerY, playerWidth / 2.0f, playerHeight);
+            hitbox.updateAxis(playerX, playerY);
         }
 };
 

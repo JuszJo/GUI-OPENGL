@@ -17,14 +17,14 @@ class Collision {
 
         glm::mat4 model = glm::mat4(1.0f);
 
-        CollidableBlock block1 = {0.0f, 0.0f, 3000.0f, 200.0f};
-        // CollidableBlock block2 = {100.0f, 0.0f, 100.0f, 100.0f};
+        CollidableBlock block1 = {0.0f, 0.0f, 100.0f, 100.0f};
+        CollidableBlock block2 = {100.0f, 100.0f, 100.0f, 100.0f};
         // CollidableBlock block3 = {200.0f, 100.0f, 100.0f, 100.0f};
 
-        CollidableBlock blocks[1] = {
-            block1/* ,
-            block2,
-            block3 */
+        CollidableBlock blocks[2] = {
+            block1,
+            block2
+            // block3
         };
 
         float x = block1.position_x;
@@ -39,10 +39,10 @@ class Collision {
             // bgHeight = height;
 
             float vertices[] = {
-                x, y, 0.0f,
-                x + width, y, 0.0f,
-                x, y + height, 0.0f,
-                x + width, y + height, 0.0f
+                x, y, 0.0f, 0.9f, 0.3f, 0.3f,
+                x + width, y, 0.0f, 0.9f, 0.3f, 0.3f,
+                x, y + height, 0.0f, 0.9f, 0.3f, 0.3f,
+                x + width, y + height, 0.0f, 0.9f, 0.3f, 0.3f
             };
 
             glGenVertexArrays(1, &VAO);
@@ -53,8 +53,11 @@ class Collision {
             glBindBuffer(GL_ARRAY_BUFFER, VBO);
             glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), nullptr);
             glEnableVertexAttribArray(0);
+
+            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+            glEnableVertexAttribArray(1);
 
             glBindVertexArray(0);
             glBindBuffer(GL_ARRAY_BUFFER, 0);

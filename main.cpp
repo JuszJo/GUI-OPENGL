@@ -42,7 +42,7 @@ void processInput(GLFWwindow* window) {
 int main() {
     if (!glfwInit()) return 1;
 
-    GLFWwindow* window = glfwCreateWindow(600, 600, "ImGui Example", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(800, 600, "ImGui Example", NULL, NULL);
 
     if (!window) {
         glfwTerminate();
@@ -124,6 +124,7 @@ int main() {
         player.render(&shader);
 
         cShader.use();
+        player.hitbox.render(&cShader, projection, view);
         player.collision.render(&cShader, projection, view);
 
         // shader.use();

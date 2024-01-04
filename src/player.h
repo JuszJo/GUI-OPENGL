@@ -16,6 +16,60 @@ struct CollisionInfo {
     float overlap;
 };
 
+class Hitbox: public Entity {
+    private:
+    int stride = 6;
+
+    public:
+        float position_x, position_y, width, height;
+
+        glm::mat4 model = glm::mat4(1.0f);
+
+        Hitbox() {}
+
+        Hitbox(float x, float y, float w, float h) {
+            position_x = x;
+            position_y = y;
+            width = w;
+            height = h;
+        }
+
+        void update(float x, float y, float w, float h) {
+            position_x = x;
+            position_y = y;
+            width = w;
+            height = h;
+        }
+
+        void render(Shader* shader, glm::mat4 projection, glm::mat4 view) {
+            float vertices[] = {
+                position_x, position_y, 0.0f, 0.3f, 0.3f, 0.3f,
+                position_x + width, position_y, 0.0f, 0.3f, 0.3f, 0.3f,
+                position_x, position_y + height, 0.0f, 0.3f, 0.3f, 0.3f,
+                position_x + width, position_y + height, 0.0f, 0.3f, 0.3f, 0.3f,
+            };
+
+            genVertexandBuffers(&VAO, &VBO);
+            bindVAO(VAO);
+
+            int verticeSize = sizeof(vertices);
+            handleVertexBufferObject(VBO, vertices, verticeSize);
+
+            handleVertexArrayObject(0, 3, stride, 0);
+            handleVertexArrayObject(1, 3, stride, 3);
+
+            shader -> use();
+
+            glUniformMatrix4fv(glGetUniformLocation(shader -> shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+            glUniformMatrix4fv(glGetUniformLocation(shader -> shaderProgram, "view"), 1, GL_FALSE, glm::value_ptr(view));
+            glUniformMatrix4fv(glGetUniformLocation(shader -> shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
+
+            // glBindTexture(GL_TEXTURE_2D, *animation.currentAnimatedState[0].TBO);
+            glBindVertexArray(VAO);
+            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        }
+};
+
 class Player: public Entity {
     private:
         int stride = 5;
@@ -49,11 +103,7 @@ class Player: public Entity {
 
         Collision collision;
 
-        // float jumpForce = 10.0f;
-        // bool shouldJump = false;
-        // bool canJump = true;
-
-        // float gForce = 1.0f;
+        Hitbox hitbox;
 
         // default constructor
         Player() {}
@@ -91,6 +141,10 @@ class Player: public Entity {
             newAnimation.updateTextureBuffer(&TBO2);
 
             animation = newAnimation;
+
+            Hitbox newHitbox(x, y, width / 2.0f, height);
+
+            hitbox = newHitbox;
         }
 
         void loadImage(char* path, unsigned int* TBO) {
@@ -135,11 +189,6 @@ class Player: public Entity {
             }
             else if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
                 speed.y = 10.0f;
-                // if(canJump) {
-                //     gForce = 1.0f;
-                //     shouldJump = true;
-                //     canJump = false;
-                // }
             }
             else if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
                 if(currentState != LEFT) currentState = LEFT;
@@ -155,31 +204,9 @@ class Player: public Entity {
             }
         }
 
-        // void resetAnimation(AnimatedState currentAnimation) {
-        //     elapsedFrames = 0;
-        //     currentFrame = currentAnimation.reversed ? currentAnimation.totalFrames : 1;
-        // }
-
-        // void pickAnimation(char* name, float numberFrames, int animationBuffer, int textureIndex, unsigned int* textureBuffer, bool reversed) {
-            // if(currentAnimatedState[0].name != name) {
-            //     AnimatedState animatedState;
-            //     animatedState.name = name;
-            //     animatedState.totalFrames = numberFrames;
-            //     animatedState.animateBuffer = animationBuffer;
-            //     animatedState.textureIndex = textureIndex;
-            //     animatedState.TBO = textureBuffer;
-            //     animatedState.reversed = reversed;
-
-            //     currentAnimatedState[0] = animatedState;
-
-            //     resetAnimation(currentAnimatedState[0]);
-            // }
-        // }
-
         void checkState() {
             switch (currentState) {
                 case LEFT:
-                    // pickAnimation((char*)"left", 8.0f, 4, 0, &TBO3, true);
                     animation.setCurrentAnimation((char*)"left", 8.0f, 4, 2, &TBO3, true);
                     speed = glm::vec3(-acceleration, speed.y, 0.0f);
                     animation.shouldAnimate = true;
@@ -187,16 +214,14 @@ class Player: public Entity {
                     break;
 
                 case RIGHT:
-                    // pickAnimation((char*)"right", 8.0f, 4, 0, &TBO, false);
                     animation.setCurrentAnimation((char*)"right", 8.0f, 4, 0, &TBO, false);
                     speed = glm::vec3(acceleration, speed.y, 0.0f);
                     animation.shouldAnimate = true;
-                    camera -> cameraPos += glm::normalize(glm::cross(camera -> cameraFaceDirection, camera -> cameraUp)) * camera -> cameraSpeed;
+                    // camera -> cameraPos += glm::normalize(glm::cross(camera -> cameraFaceDirection, camera -> cameraUp)) * camera -> cameraSpeed;
                     
                     break;
 
                 case DOWN:
-                    // pickAnimation((char*)"right", 8.0f, 4, 0, &TBO, false);
                     // animation.setCurrentAnimation((char*)"right", 8.0f, 4, 0, &TBO, false);
                     speed = glm::vec3(0.0f, -acceleration, 0.0f);
                     // animation.shouldAnimate = true;
@@ -204,7 +229,6 @@ class Player: public Entity {
                     break;
 
                 case UP:
-                    // pickAnimation((char*)"right", 8.0f, 4, 0, &TBO, false);
                     // animation.setCurrentAnimation((char*)"right", 8.0f, 4, 0, &TBO, false);
                     speed = glm::vec3(0.0f, acceleration, 0.0f);
                     // animation.shouldAnimate = true;
@@ -212,7 +236,6 @@ class Player: public Entity {
                     break;
 
                 case IDLE:
-                    // pickAnimation((char*)"idle", 11.0f, 4, 1, &TBO2, false);
                     animation.setCurrentAnimation((char*)"idle", 11.0f, 4, 1, &TBO2, false);
                     // speed = glm::vec3(0.0f, 0.0f, 0.0f);
                     speed = glm::vec3(0.0f, speed.y, 0.0f);
@@ -253,73 +276,18 @@ class Player: public Entity {
             
         }
 
-
-        // void scale(float scaleFactorX, float scaleFactorY) {
-        //     float scaledWidth = playerWidth * scaleFactorX;
-        //     float scaledHeight = playerHeight * scaleFactorY;
-
-        //     if(axis == (char*)"center") {
-        //         float dWidth = scaledWidth - playerWidth;
-        //         float dHeight = scaledHeight - playerHeight;
-
-        //         float newPlayerX = playerX - (dWidth / 2);
-        //         float newPlayerY = playerY - (dHeight / 2);
-
-        //         model = glm::translate(model, glm::vec3(playerX + (playerWidth / 2), playerY + (playerHeight / 2), 0.0f));
-
-        //         model = glm::scale(model, glm::vec3(scaleFactorX, scaleFactorY, 1.0f));
-
-        //         model = glm::translate(model, glm::vec3(-(playerX + (playerWidth / 2)), -(playerY + (playerHeight / 2)), 0.0f));
-
-        //         updatePosition(newPlayerX, newPlayerY);
-        //     }
-        //     else {
-        //         model = glm::translate(model, glm::vec3(playerX, playerY, 0.0f));
-
-        //         model = glm::scale(model, glm::vec3(scaleFactorX, scaleFactorY, 1.0f));
-
-        //         model = glm::translate(model, glm::vec3(-playerX, -playerY, 0.0f));
-        //     }
-        //     updateSize(scaledWidth, scaledHeight);
-        // }
-
-        // void animate(Shader* shader) {
-        //     if(shouldAnimate) {
-        //         if(elapsedFrames % currentAnimatedState[0].animateBuffer == 0) {
-        //             if(!currentAnimatedState[0].reversed) animateForward(currentAnimatedState[0]);
-        //             else animateReversed(currentAnimatedState[0]);
-
-        //             elapsedFrames = 0;
-        //         }
-
-        //         ++elapsedFrames;
-        //     }
-        //     else {
-        //         resetAnimation(currentAnimatedState[0]);
-        //     }
-        // }
-
-        // void animateForward(AnimatedState currentAnimation) {
-        //     if(currentFrame >= currentAnimation.totalFrames) currentFrame = 1;
-        //     else ++currentFrame;
-        // }
-
-        // void animateReversed(AnimatedState currentAnimation) {
-        //     if(currentFrame <= 1) currentFrame = currentAnimation.totalFrames;
-        //     else --currentFrame;
-        // }
-
         void checkCollision(float position_x, float position_y, float width, float height) {
             for(int i = 0; i < sizeof(collision.blocks) / sizeof(collision.blocks[0]); ++i) {
                 CollidableBlock currentBlock = collision.blocks[i];
 
                 if(collision.didCollide(position_x, position_y, width, height, currentBlock)) {
-                    collisionResponse(currentBlock);
+                    // collisionResponse(currentBlock, hitbox.position_x, hitbox.position_y, hitbox.width, hitbox.height);
+                    collisionResponse(currentBlock, playerX, playerY, playerWidth, playerHeight);
                 }
             }
         }
 
-        void collisionResponse(CollidableBlock currentBlock) {
+        void collisionResponse(CollidableBlock currentBlock, float playerX, float playerY, float playerWidth, float playerHeight) {
             // referse to player bottom and top and left and right
             float bottom = (float)abs(playerY - (currentBlock.position_y + currentBlock.height));
             float top = (float)abs((playerY + playerHeight) - currentBlock.position_y);
@@ -349,30 +317,9 @@ class Player: public Entity {
 
                 setPosition(currentBlock.position_x - playerWidth, playerY);
             }
-
-            // float xAxis = collision.getCollideAxisX(left, right) == (char*)"left" ? left : right;
-            // float yAxis = collision.getCollideAxisY(bottom, top) == (char*)"bottom" ? bottom : top;
-
-            // printf("%s: %f, %s: %f\n", xInfo.side, xInfo.overlap, yInfo.side, yInfo.overlap);
-            // printf("%s: %f\n", final.side, final.overlap);
-
-            // if(collision.getCollideAxisY(bottom, top) == (char*)"bottom") {
-            //     // gravity.stopGravity();
-
-            //     // speed.y = 0.0f;
-
-            //     // setPosition(playerX, currentBlock.position_y + currentBlock.height);
-            // }
-            // if(collision.getCollideAxisX(left, right) == (char*)"right") {
-            //     speed.x = 0.0f;
-
-            //     setPosition(currentBlock.position_x, playerY);
-            // }
         }
 
         void render(Shader* shader) {
-            // std::cout << currentAnimatedState[0].name << "\t" << currentAnimatedState[0].totalFrames << "\t" << currentFrame <<std::endl;
-            // setUniform1f(shader, (char*)"totalFrames", currentAnimatedState[0].totalFrames);
             setUniform1f(shader, (char*)"totalFrames", animation.currentAnimatedState[0].totalFrames);
             setUniform1f(shader, (char*)"currentFrame", animation.currentFrame);
             glBindTexture(GL_TEXTURE_2D, *animation.currentAnimatedState[0].TBO);
@@ -385,9 +332,8 @@ class Player: public Entity {
             checkState();
             move();
             animation.animate();
-            // CollisionInfo info = collision.checkCollision(playerX, playerY, playerWidth, playerHeight);
             checkCollision(playerX, playerY, playerWidth, playerHeight);
-            // collisionResponse(info);
+            hitbox.update(playerX, playerY, playerWidth / 2.0f, playerHeight);
         }
 };
 

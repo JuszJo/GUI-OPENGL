@@ -11,6 +11,11 @@
 #include "gravity.h"
 #include "collision.h"
 
+struct CollisionInfo {
+    char* side;
+    float overlap;
+};
+
 class Player: public Entity {
     private:
         int stride = 5;
@@ -124,9 +129,10 @@ class Player: public Entity {
             //     glfwSetWindowShouldClose(window, true);
             // }
             if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-                
+                // if(currentState != UP) currentState = UP;
             }
             else if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+                speed.y = 10.0f;
                 // if(canJump) {
                 //     gForce = 1.0f;
                 //     shouldJump = true;
@@ -139,9 +145,9 @@ class Player: public Entity {
             else if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
                 if(currentState != RIGHT) currentState = RIGHT;
             }
-            // else if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-            //     if(currentState != DOWN) currentState = DOWN;
-            // }
+            else if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+                // if(currentState != DOWN) currentState = DOWN;
+            }
             else {
                 currentState = IDLE;
             }
@@ -186,17 +192,26 @@ class Player: public Entity {
                     
                     break;
 
-                // case DOWN:
-                //     // pickAnimation((char*)"right", 8.0f, 4, 0, &TBO, false);
-                //     // animation.setCurrentAnimation((char*)"right", 8.0f, 4, 0, &TBO, false);
-                //     speed = glm::vec3(0.0f, -1.0f, 0.0f);
-                //     // animation.shouldAnimate = true;
+                case DOWN:
+                    // pickAnimation((char*)"right", 8.0f, 4, 0, &TBO, false);
+                    // animation.setCurrentAnimation((char*)"right", 8.0f, 4, 0, &TBO, false);
+                    speed = glm::vec3(0.0f, -acceleration, 0.0f);
+                    // animation.shouldAnimate = true;
                     
-                //     break;
+                    break;
+
+                case UP:
+                    // pickAnimation((char*)"right", 8.0f, 4, 0, &TBO, false);
+                    // animation.setCurrentAnimation((char*)"right", 8.0f, 4, 0, &TBO, false);
+                    speed = glm::vec3(0.0f, acceleration, 0.0f);
+                    // animation.shouldAnimate = true;
+                    
+                    break;
 
                 case IDLE:
                     // pickAnimation((char*)"idle", 11.0f, 4, 1, &TBO2, false);
                     animation.setCurrentAnimation((char*)"idle", 11.0f, 4, 1, &TBO2, false);
+                    // speed = glm::vec3(0.0f, 0.0f, 0.0f);
                     speed = glm::vec3(0.0f, speed.y, 0.0f);
                     animation.shouldAnimate = true;
                     
@@ -291,30 +306,65 @@ class Player: public Entity {
         //     else --currentFrame;
         // }
 
-        void collisionResponse(CollisionInfo info) {
-            if(info.collidableBlockIndex != -1) {
-                CollidableBlock currentBlock = collision.blocks[info.collidableBlockIndex];
+        void checkCollision(float position_x, float position_y, float width, float height) {
+            for(int i = 0; i < sizeof(collision.blocks) / sizeof(collision.blocks[0]); ++i) {
+                CollidableBlock currentBlock = collision.blocks[i];
 
-                float bottom = abs(playerY - (currentBlock.position_y + currentBlock.height));
-                float top = abs((playerY + playerHeight) - currentBlock.position_y);
-
-                float left = abs(playerX - (currentBlock.position_x + currentBlock.width));
-                float right = abs((playerX + playerWidth) - currentBlock.position_x);
-
-                // std::cout << bottom << "\t" << top << std::endl;
-                // std::cout << collision.getCollideAxisY(bottom, top) << std::endl;
-                // std::cout << left << "\t" << right << std::endl;
-                std::cout << collision.getCollideAxisX(left, right) << std::endl;
-                std::cout << info.collidableBlockIndex << std::endl;
-
-                if(collision.getCollideAxisY(bottom, top) == (char*)"bottom") {
-                    // gravity.stopGravity();
-
-                    speed.y = 0;
-
-                    setPosition(playerX, currentBlock.position_y + currentBlock.height);
+                if(collision.didCollide(position_x, position_y, width, height, currentBlock)) {
+                    collisionResponse(currentBlock);
                 }
             }
+        }
+
+        void collisionResponse(CollidableBlock currentBlock) {
+            // referse to player bottom and top and left and right
+            float bottom = (float)abs(playerY - (currentBlock.position_y + currentBlock.height));
+            float top = (float)abs((playerY + playerHeight) - currentBlock.position_y);
+
+            float left = (float)abs(playerX - (currentBlock.position_x + currentBlock.width));
+            float right = (float)abs((playerX + playerWidth) - currentBlock.position_x);
+
+            // std::cout << bottom << "\t" << top << std::endl;
+            // std::cout << collision.getCollideAxisY(bottom, top) << std::endl;
+            // std::cout << left << "\t" << right << std::endl;
+            // std::cout << collision.getCollideAxisX(left, right) << std::endl;
+
+            CollisionInfo xInfo = {collision.getCollideAxisX(left, right), collision.getCollideAxisX(left, right) == (char*)"left" ? left : right};
+            CollisionInfo yInfo = {collision.getCollideAxisY(bottom, top), collision.getCollideAxisY(bottom, top) == (char*)"bottom" ? bottom : top};
+
+            CollisionInfo final = {xInfo.overlap < yInfo.overlap ? xInfo.side : yInfo.side, xInfo.overlap < yInfo.overlap ? xInfo.overlap : yInfo.overlap};
+
+            // printf("%s: %f\n", final.side, final.overlap);
+
+            if(final.side == (char*)"bottom") {
+                speed.y = 0.0f;
+
+                setPosition(playerX, currentBlock.position_y + currentBlock.height);
+            }
+            if(final.side == (char*)"right") {
+                speed.x = 0.0f;
+
+                setPosition(currentBlock.position_x - playerWidth, playerY);
+            }
+
+            // float xAxis = collision.getCollideAxisX(left, right) == (char*)"left" ? left : right;
+            // float yAxis = collision.getCollideAxisY(bottom, top) == (char*)"bottom" ? bottom : top;
+
+            // printf("%s: %f, %s: %f\n", xInfo.side, xInfo.overlap, yInfo.side, yInfo.overlap);
+            // printf("%s: %f\n", final.side, final.overlap);
+
+            // if(collision.getCollideAxisY(bottom, top) == (char*)"bottom") {
+            //     // gravity.stopGravity();
+
+            //     // speed.y = 0.0f;
+
+            //     // setPosition(playerX, currentBlock.position_y + currentBlock.height);
+            // }
+            // if(collision.getCollideAxisX(left, right) == (char*)"right") {
+            //     speed.x = 0.0f;
+
+            //     setPosition(currentBlock.position_x, playerY);
+            // }
         }
 
         void render(Shader* shader) {
@@ -332,8 +382,9 @@ class Player: public Entity {
             checkState();
             move();
             animation.animate();
-            CollisionInfo info = collision.checkCollision(playerX, playerY, playerWidth, playerHeight);
-            collisionResponse(info);
+            // CollisionInfo info = collision.checkCollision(playerX, playerY, playerWidth, playerHeight);
+            checkCollision(playerX, playerY, playerWidth, playerHeight);
+            // collisionResponse(info);
         }
 };
 

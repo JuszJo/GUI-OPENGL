@@ -11,10 +11,6 @@ struct CollidableBlock {
     float height;
 };
 
-struct CollisionInfo {
-    int collidableBlockIndex;
-};
-
 class Collision {
     public:
         unsigned int VAO, VBO;
@@ -22,11 +18,13 @@ class Collision {
         glm::mat4 model = glm::mat4(1.0f);
 
         CollidableBlock block1 = {0.0f, 0.0f, 100.0f, 100.0f};
-        CollidableBlock block2 = {100.0f, 100.0f, 100.0f, 100.0f};
+        CollidableBlock block2 = {100.0f, 0.0f, 100.0f, 100.0f};
+        CollidableBlock block3 = {200.0f, 100.0f, 100.0f, 100.0f};
 
-        CollidableBlock blocks[2] = {
+        CollidableBlock blocks[3] = {
             block1,
-            block2
+            block2,
+            block3
         };
 
         float x = block1.position_x;
@@ -63,7 +61,7 @@ class Collision {
         }
 
         char* getCollideAxisX(float left, float right) {
-            return left > right ? (char*)"left" : (char*)"right";
+            return left < right ? (char*)"left" : (char*)"right";
         }
 
         char* getCollideAxisY(float bottom, float top) {
@@ -82,25 +80,25 @@ class Collision {
             else return false;
         }
 
-        CollisionInfo checkCollision(float position_x, float position_y, float width, float height) {
-            bool collisionOccured = false;
+        // CollisionInfo checkCollision(float position_x, float position_y, float width, float height) {
+        //     bool collisionOccured = false;
 
-            for(int i = 0; i < sizeof(blocks) / sizeof(blocks[0]); ++i) {
-                CollidableBlock currentBlock = blocks[i];
+        //     for(int i = 0; i < sizeof(blocks) / sizeof(blocks[0]); ++i) {
+        //         CollidableBlock currentBlock = blocks[i];
 
-                if(didCollide(position_x, position_y, width, height, currentBlock)) {
-                    collisionOccured = true;
+        //         if(didCollide(position_x, position_y, width, height, currentBlock)) {
+        //             collisionOccured = true;
 
-                    CollisionInfo info = {i};
+        //             CollisionInfo info = {i};
 
-                    return info;
-                }
-            }
+        //             return info;
+        //         }
+        //     }
 
-            CollisionInfo info = {-1};
+        //     CollisionInfo info = {-1};
 
-            return info;
-        }
+        //     return info;
+        // }
 
         void render(Shader* shader, glm::mat4 projection, glm::mat4 view) {
             for(CollidableBlock block : blocks) {

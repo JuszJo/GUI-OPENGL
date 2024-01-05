@@ -276,6 +276,17 @@ class Player: public Entity {
             }
         }
 
+        void checkWallCollision() {
+            if(hitbox.position_x < 0) {
+                setPosition(0.0f - hitbox.x_offset, playerY);
+                hitbox.updateAxis(playerX, playerY);
+            }
+            if(hitbox.position_x + hitbox.width > 800.0f) {
+                setPosition(800.0f - hitbox.width - hitbox.x_offset, playerY);
+                hitbox.updateAxis(playerX, playerY);
+            }
+        }
+
         void collisionResponse(CollidableBlock currentBlock, float x, float y, float width, float height) {
             // referse to player bottom and top and left and right
             float bottom = (float)abs(y - (currentBlock.position_y + currentBlock.height));
@@ -298,7 +309,7 @@ class Player: public Entity {
 
             if(final.side == (char*)"bottom") {
                 speed.y = 0.0f;
-                
+
                 canJump = true;
 
                 setPosition(this -> playerX, currentBlock.position_y + currentBlock.height - hitbox.y_offset);
@@ -331,6 +342,7 @@ class Player: public Entity {
             animation.animate();
             hitbox.updateAxis(playerX, playerY);
             // checkCollision(playerX, playerY, playerWidth, playerHeight);
+            checkWallCollision();
             checkCollision(hitbox.position_x, hitbox.position_y, hitbox.width, hitbox.height);
             hitbox.updateAxis(playerX, playerY);
         }

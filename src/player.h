@@ -31,6 +31,8 @@ class Player: public Entity {
 
         float acceleration = 2.0f;
 
+        bool canJump = false;
+
         enum STATE {
             UP,
             DOWN,
@@ -144,7 +146,8 @@ class Player: public Entity {
                 if(currentAltState != ATTACK) currentAltState = ATTACK;
             }
             else if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-                speed.y = 10.0f;
+                // speed.y = 10.0f;
+                jump();
             }
             else if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
                 if(currentState != LEFT) currentState = LEFT;
@@ -157,6 +160,13 @@ class Player: public Entity {
             }
             else {
                 currentState = IDLE;
+            }
+        }
+
+        void jump() {
+            if(canJump) {
+                speed.y = 10.0f;
+                canJump = false;
             }
         }
 
@@ -288,6 +298,8 @@ class Player: public Entity {
 
             if(final.side == (char*)"bottom") {
                 speed.y = 0.0f;
+                
+                canJump = true;
 
                 setPosition(this -> playerX, currentBlock.position_y + currentBlock.height - hitbox.y_offset);
                 hitbox.updateAxis(this -> playerX, currentBlock.position_y + currentBlock.height);

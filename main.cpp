@@ -20,7 +20,7 @@ struct Camera {
 };
 
 bool settingShowHitbox = false;
-bool settingShowCollisionbox = false;
+bool settingShowCollisionbox = true;
 
 #include "src/background.h"
 #include "src/player.h"

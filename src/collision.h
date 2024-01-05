@@ -104,6 +104,7 @@ class Collision {
         // }
 
         void render(Shader* shader, glm::mat4 projection, glm::mat4 view) {
+            if(!settingShowCollisionbox) return;
             for(CollidableBlock block : blocks) {
                 model = glm::mat4(1.0f);
                 model = glm::translate(model, glm::vec3(block.position_x, block.position_y, 0.0f));

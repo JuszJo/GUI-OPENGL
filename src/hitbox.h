@@ -41,6 +41,8 @@ class Hitbox: public Entity {
         }
 
         void render(Shader* shader, glm::mat4 projection, glm::mat4 view) {
+            if(!settingShowHitbox) return;
+            
             float vertices[] = {
                 position_x, position_y, 0.0f, 0.3f, 0.3f, 0.3f, 0.9f,
                 position_x + width, position_y, 0.0f, 0.3f, 0.3f, 0.3f, 0.9f,

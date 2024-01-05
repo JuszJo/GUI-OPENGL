@@ -31,7 +31,7 @@ class Animation {
 
         void resetAnimation(AnimatedState currentAnimation) {
             elapsedFrames = 0;
-            currentFrame = currentAnimation.reversed ? currentAnimation.totalFrames : 1;
+            currentFrame = currentAnimation.reversed ? currentAnimation.totalFrames + 1 : 0;
         }
 
         void setCurrentAnimation(char* name, float totalFrames, int animateBuffer, int textureIndex, unsigned int* textureBuffer, bool reversed) {

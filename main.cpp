@@ -19,8 +19,8 @@ struct Camera {
     float cameraSpeed = 2.0f;
 };
 
-bool settingShowHitbox = true;
-bool settingShowCollisionbox = true;
+bool settingShowHitbox = false;
+bool settingShowCollisionbox = false;
 
 #include "src/background.h"
 #include "src/player.h"

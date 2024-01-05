@@ -17,7 +17,7 @@ class Player: public Entity {
         int stride = 5;
 
     public:
-        unsigned int TBO2, TBO3, TBO4;
+        unsigned int TBO2, TBO3, TBO4, TBO5, TBO6;
 
         float playerWidth, playerHeight, playerX, playerY;
 
@@ -39,7 +39,13 @@ class Player: public Entity {
             IDLE
         };
 
+        enum ALTSTATE {
+            ATTACK,
+            NONE
+        };
+
         STATE currentState = IDLE;
+        ALTSTATE currentAltState = NONE;
 
         Gravity gravity;
 
@@ -77,6 +83,8 @@ class Player: public Entity {
             loadImage((char*)"src\\assets\\playeridle.png", &TBO2);
             loadImage((char*)"src\\assets\\player2.png", &TBO3);
             loadImage((char*)"src\\assets\\playerup.png", &TBO4);
+            loadImage((char*)"src\\assets\\playerattack.png", &TBO5);
+            loadImage((char*)"src\\assets\\playerattack2.png", &TBO6);
 
             Animation newAnimation((char*)"idle", 11.0f, 4, 1, nullptr, false);
 
@@ -128,8 +136,12 @@ class Player: public Entity {
             // if(glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) {
             //     glfwSetWindowShouldClose(window, true);
             // }
-            if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+            // if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+            //     // if(currentState != UP) currentState = UP;
+            // }
+            if(glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS) {
                 // if(currentState != UP) currentState = UP;
+                if(currentAltState != ATTACK) currentAltState = ATTACK;
             }
             else if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
                 speed.y = 10.0f;
@@ -151,14 +163,14 @@ class Player: public Entity {
         void checkState() {
             switch (currentState) {
                 case LEFT:
-                    animation.setCurrentAnimation((char*)"left", 8.0f, 4, 2, &TBO3, true);
+                    if(currentAltState == NONE) animation.setCurrentAnimation((char*)"left", 8.0f, 4, 2, &TBO3, true);
                     speed = glm::vec3(-acceleration, speed.y, 0.0f);
                     animation.shouldAnimate = true;
                     
                     break;
 
                 case RIGHT:
-                    animation.setCurrentAnimation((char*)"right", 8.0f, 4, 0, &TBO, false);
+                    if(currentAltState == NONE) animation.setCurrentAnimation((char*)"right", 8.0f, 4, 0, &TBO, false);
                     speed = glm::vec3(acceleration, speed.y, 0.0f);
                     animation.shouldAnimate = true;
                     // camera -> cameraPos += glm::normalize(glm::cross(camera -> cameraFaceDirection, camera -> cameraUp)) * camera -> cameraSpeed;
@@ -180,7 +192,7 @@ class Player: public Entity {
                     break;
 
                 case IDLE:
-                    animation.setCurrentAnimation((char*)"idle", 11.0f, 4, 1, &TBO2, false);
+                    if(currentAltState == NONE) animation.setCurrentAnimation((char*)"idle", 11.0f, 4, 1, &TBO2, false);
                     // speed = glm::vec3(0.0f, 0.0f, 0.0f);
                     speed = glm::vec3(0.0f, speed.y, 0.0f);
                     animation.shouldAnimate = true;
@@ -188,6 +200,28 @@ class Player: public Entity {
                     break;
                 
                 default:
+                    break;
+            }
+        }
+
+        void checkAltState() {
+            unsigned int* texture = currentState == LEFT ? &TBO6 : &TBO5;
+            bool reversed = currentState == LEFT ? true : false;
+            switch (currentAltState) {
+                case ATTACK:    
+                    animation.setCurrentAnimation((char*)"attack", 3.0f, 4, 3, texture, reversed);
+                    // speed = glm::vec3(-acceleration, speed.y, 0.0f);
+                    animation.shouldAnimate = true;
+                    // std::cout << "ATTACKING\n";
+                    // std::cout << animation.currentFrame << std::endl;
+                    if(animation.currentFrame == (currentState == LEFT ? 1 : 3)) {
+                        currentAltState = NONE;
+                    }
+                    
+                    break;
+
+                default:
+                    
                     break;
             }
         }
@@ -280,6 +314,7 @@ class Player: public Entity {
         void update(Shader* shader) {
             gravity.applyGravity(&speed);
             checkState();
+            checkAltState();
             move();
             animation.animate();
             hitbox.updateAxis(playerX, playerY);

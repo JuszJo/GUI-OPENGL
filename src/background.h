@@ -119,7 +119,10 @@ class BackgroundBeta {
         }
 
         
-        void render(Shader* shader, glm::mat4 projection) {
+        void render(Shader* shader, glm::mat4 projection, glm::mat4 view) {
+            glUniformMatrix4fv(glGetUniformLocation(shader -> shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+            glUniformMatrix4fv(glGetUniformLocation(shader -> shaderProgram, "view"), 1, GL_FALSE, glm::value_ptr(view));
+            glUniformMatrix4fv(glGetUniformLocation(shader -> shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
             glBindTexture(GL_TEXTURE_2D, TBO);
             glBindVertexArray(VAO);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);

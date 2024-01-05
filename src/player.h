@@ -323,18 +323,18 @@ class Player: public Entity {
             }
         }
 
-        void render(Shader* shader) {
-            // hitbox.update(playerX, playerY, playerWidth, playerHeight);
+        void render(Shader* shader, glm::mat4 projection, glm::mat4 view) {
+            glUniformMatrix4fv(glGetUniformLocation(shader -> shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+            glUniformMatrix4fv(glGetUniformLocation(shader -> shaderProgram, "view"), 1, GL_FALSE, glm::value_ptr(view));
+            glUniformMatrix4fv(glGetUniformLocation(shader -> shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
             setUniform1f(shader, (char*)"totalFrames", animation.currentAnimatedState[0].totalFrames);
             setUniform1f(shader, (char*)"currentFrame", animation.currentFrame);
             glBindTexture(GL_TEXTURE_2D, *animation.currentAnimatedState[0].TBO);
             glBindVertexArray(VAO);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-            // hitbox.update(playerX, playerY, playerWidth, playerHeight);
         }
 
-        void update(Shader* shader) {
+        void update() {
             gravity.applyGravity(&speed);
             checkState();
             checkAltState();

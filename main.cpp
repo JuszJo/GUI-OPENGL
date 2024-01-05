@@ -120,31 +120,22 @@ int main() {
 
         if(menu.display) {
             glfwGetCursorPos(window, &menu.cursor_position_x, &menu.cursor_position_y);
-            menuShader.use();
             menu.checkMousePress(window);
+            menuShader.use();
             menu.render(&menuShader, projection);
         }
 
         if(gameStart) {
-            // projection = glm::ortho(0.0f, (float)display_w, 0.0f, (float)display_h, -10.0f, 10.0f);
-            // view = glm::lookAt(camera.cameraPos, camera.cameraPos + camera.cameraFaceDirection, camera.cameraUp);
-
             player.processInput(window);
             // processInput(window);
 
             bgShader.use();
             bgBeta.experimentalScale((float)(display_w / bgBeta.bgWidth), (float)(display_h / bgBeta.bgHeight));
-            glUniformMatrix4fv(glGetUniformLocation(bgShader.shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-            glUniformMatrix4fv(glGetUniformLocation(bgShader.shaderProgram, "view"), 1, GL_FALSE, glm::value_ptr(view));
-            glUniformMatrix4fv(glGetUniformLocation(bgShader.shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(bgBeta.model));
-            bgBeta.render(&bgShader, projection);
+            bgBeta.render(&bgShader, projection, view);
             
             shader.use();
-            player.update(&shader);
-            glUniformMatrix4fv(glGetUniformLocation(shader.shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-            glUniformMatrix4fv(glGetUniformLocation(shader.shaderProgram, "view"), 1, GL_FALSE, glm::value_ptr(view));
-            glUniformMatrix4fv(glGetUniformLocation(shader.shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(player.model));
-            player.render(&shader);
+            player.update();
+            player.render(&shader, projection, view);
 
             cShader.use();
             player.hitbox.render(&cShader, projection, view);

@@ -58,15 +58,20 @@ class Menu {
             }
         }
 
+        void startGame() {
+            gameStart = true;
+            display = false;
+        }
+
+        void pause() {
+            gameStart = false;
+            display = true;
+        }
+
         void runAction(Button currentButton) {
             if(currentButton.name == (char*)"play") {
                 startGame();
             }
-        }
-
-        void startGame() {
-            gameStart = true;
-            display = false;
         }
 
         void render(Shader* menuShader, glm::mat4 projection) {

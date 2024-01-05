@@ -19,6 +19,8 @@ struct Camera {
     float cameraSpeed = 2.0f;
 };
 
+int display_w, display_h;
+
 bool settingShowHitbox = false;
 bool settingShowCollisionbox = false;
 
@@ -30,9 +32,15 @@ bool gameStart = false;
 
 Camera camera;
 
+Menu menu(&display_w, &display_h);
+
 void processInput(GLFWwindow* window) {
-    if(glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) {
-        glfwSetWindowShouldClose(window, true);
+    // if(glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) {
+    //     glfwSetWindowShouldClose(window, true);
+    // }
+
+    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+        menu.pause();
     }
     // const float cameraSpeed = 1.0f; // adjust accordingly
     // forward
@@ -60,8 +68,6 @@ int main() {
 
     glewInit();
 
-    int display_w, display_h;
-
     // Shader shader("shaders/vertexShader.glsl", "shaders/fragmentShader.glsl");
     // Shader menuShader("shaders/menu/menuVertexShader.glsl", "shaders/menu/menuFragmentShader.glsl");
     // Button button((char*)"src\\assets\\playbutton.png", 50.0f, 30.0f, 0.0f, 0.0f);
@@ -87,8 +93,6 @@ int main() {
     Shader bgShader("shaders/background/bgVertexShader.glsl", "shaders/background/bgFragmentShader.glsl");
     Shader cShader("shaders/collision/collisionVertexShader.glsl", "shaders/collision/collisionFragmentShader.glsl");
     Shader menuShader("shaders/menu/menuVertexShader.glsl", "shaders/menu/menuFragmentShader.glsl");
-
-    Menu menu(&display_w, &display_h);
 
     menu.addButton((char*)"src\\assets\\playbutton.png", 100.0f, 50.0f, 350.0f, 275.0f, (char*)"play");
 
@@ -126,8 +130,8 @@ int main() {
         }
 
         if(gameStart) {
+            processInput(window);
             player.processInput(window);
-            // processInput(window);
 
             bgShader.use();
             bgBeta.experimentalScale((float)(display_w / bgBeta.bgWidth), (float)(display_h / bgBeta.bgHeight));

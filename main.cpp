@@ -29,19 +29,20 @@ bool gameStart = false;
 #include "src/menu.h"
 #include "src/background.h"
 #include "src/player.h"
+#include "src/playerMenu.h"
 
 Camera camera;
 
 Menu menu(&display_w, &display_h);
 
-void processInput(GLFWwindow* window) {
+void processInput(GLFWwindow* window, PlayerMenu* playerMenu) {
     // if(glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) {
     //     glfwSetWindowShouldClose(window, true);
     // }
 
-    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-        menu.pause();
-    }
+    // if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+    //     playerMenu->pause();
+    // }
     // const float cameraSpeed = 1.0f; // adjust accordingly
     // forward
     // if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) cameraPos += cameraSpeed * cameraFaceDirection;
@@ -95,10 +96,15 @@ int main() {
     Shader menuShader("shaders/menu/menuVertexShader.glsl", "shaders/menu/menuFragmentShader.glsl");
 
     menu.addButton((char*)"src\\assets\\playbutton.png", 100.0f, 50.0f, 350.0f, 275.0f, (char*)"play");
+    // menu.addButton((char*)"src\\assets\\quitbutton.png", 100.0f, 50.0f, 350.0f, 175.0f, (char*)"quit");
+    menu.setDisplay(true);
 
     BackgroundBeta bgBeta((char*)"src\\assets\\bg.jpg", 0.0f, 0.0f, 600.0f, 600.0f);
     Player player((char*)"src\\assets\\player.png", 0.0f, 500.0f, 78.0f, 58.0f);
     player.camera = &camera;
+    PlayerMenu playerMenu(&menu, &player, &display_w, &display_h);
+    playerMenu.addButton((char*)"src\\assets\\playbutton.png", 100.0f, 50.0f, 350.0f, 275.0f, (char*)"play");
+    playerMenu.addButton((char*)"src\\assets\\quitbutton.png", 100.0f, 50.0f, 350.0f, 175.0f, (char*)"quit");
 
     // bgBeta.experimentalScale(10.0f, 1.0f);
 
@@ -123,27 +129,33 @@ int main() {
         view = glm::lookAt(camera.cameraPos, camera.cameraPos + camera.cameraFaceDirection, camera.cameraUp);
 
         if(menu.display) {
-            glfwGetCursorPos(window, &menu.cursor_position_x, &menu.cursor_position_y);
-            menu.checkMousePress(window);
+            menu.updateMenuCursor(window);
             menuShader.use();
-            menu.render(&menuShader, projection);
+            menu.render(window, &menuShader, projection);
         }
 
         if(gameStart) {
-            processInput(window);
-            player.processInput(window);
+            playerMenu.processInput(window);
+            if(playerMenu.display) {
+                playerMenu.updateMenuCursor(window);
+                menuShader.use();
+                playerMenu.render(window, &menuShader, projection);
+            }
+            else {
+                player.processInput(window);
 
-            bgShader.use();
-            bgBeta.experimentalScale((float)(display_w / bgBeta.bgWidth), (float)(display_h / bgBeta.bgHeight));
-            bgBeta.render(&bgShader, projection, view);
-            
-            shader.use();
-            player.update();
-            player.render(&shader, projection, view);
+                bgShader.use();
+                bgBeta.experimentalScale((float)(display_w / bgBeta.bgWidth), (float)(display_h / bgBeta.bgHeight));
+                bgBeta.render(&bgShader, projection, view);
+                
+                shader.use();
+                player.update();
+                player.render(&shader, projection, view);
 
-            cShader.use();
-            player.hitbox.render(&cShader, projection, view);
-            player.collision.render(&cShader, projection, view);
+                cShader.use();
+                player.hitbox.render(&cShader, projection, view);
+                player.collision.render(&cShader, projection, view);
+            }
         }
 
 

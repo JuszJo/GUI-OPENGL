@@ -346,6 +346,19 @@ class Player: public Entity {
             checkCollision(hitbox.position_x, hitbox.position_y, hitbox.width, hitbox.height);
             hitbox.updateAxis(playerX, playerY);
         }
+
+        void resetPlayer() {
+            setPosition(0.0f, 500.0f);
+            
+            hitbox.updateAxis(0.0f, 500.0f);
+
+            speed = glm::vec3(0.0f, 0.0f, 0.0f);
+
+            currentState = IDLE;
+            currentAltState = NONE;
+
+            canJump = false;
+        }
 };
 
 #endif

@@ -1,11 +1,6 @@
 #ifndef BUTTON_H
 #define BUTTON_H
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-
 #include "entity.h"
 
 class Button: public Entity {
@@ -17,15 +12,17 @@ class Button: public Entity {
         bool active = false;
         // const char* axis = "origin";
         const char* axis = "center";
+        char* name;
 
         // default constructor
         Button() {}
 
-        Button(char* texturePath, float width, float height, float x, float y) {
+        Button(char* texturePath, float width, float height, float x, float y, char* buttonName) {
             buttonWidth = width;
             buttonHeight = height;
             buttonX = x;
             buttonY = y;
+            name = buttonName;
 
             float vertices[20] = {
                 x, y, 0.0f, 0.0f, 1.0f,

@@ -22,6 +22,9 @@ struct Camera {
 bool settingShowHitbox = false;
 bool settingShowCollisionbox = false;
 
+bool gameStart = false;
+
+#include "src/menu.h"
 #include "src/background.h"
 #include "src/player.h"
 
@@ -83,6 +86,12 @@ int main() {
     Shader shader("shaders/vertexShader.glsl", "shaders/fragmentShader.glsl");
     Shader bgShader("shaders/background/bgVertexShader.glsl", "shaders/background/bgFragmentShader.glsl");
     Shader cShader("shaders/collision/collisionVertexShader.glsl", "shaders/collision/collisionFragmentShader.glsl");
+    Shader menuShader("shaders/menu/menuVertexShader.glsl", "shaders/menu/menuFragmentShader.glsl");
+
+    Menu menu(&display_w, &display_h);
+
+    menu.addButton((char*)"src\\assets\\playbutton.png", 100.0f, 50.0f, 350.0f, 275.0f, (char*)"play");
+
     BackgroundBeta bgBeta((char*)"src\\assets\\bg.jpg", 0.0f, 0.0f, 600.0f, 600.0f);
     Player player((char*)"src\\assets\\player.png", 0.0f, 500.0f, 78.0f, 58.0f);
     player.camera = &camera;
@@ -97,38 +106,51 @@ int main() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+
     while (!glfwWindowShouldClose(window)) {
         glfwGetFramebufferSize(window, &display_w, &display_h);
         glViewport(0, 0, display_w, display_h);
-        // glfwGetCursorPos(window, &menu.cursor_position_x, &menu.cursor_position_y);
-
-        projection = glm::ortho(0.0f, (float)display_w, 0.0f, (float)display_h, -10.0f, 10.0f);
-        view = glm::lookAt(camera.cameraPos, camera.cameraPos + camera.cameraFaceDirection, camera.cameraUp);
-
-        player.processInput(window);
-        // processInput(window);
 
         glfwPollEvents();
         glClearColor(0.45f, 0.55f, 0.60f, 1.00f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        bgShader.use();
-        bgBeta.experimentalScale((float)(display_w / bgBeta.bgWidth), (float)(display_h / bgBeta.bgHeight));
-        glUniformMatrix4fv(glGetUniformLocation(bgShader.shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-        glUniformMatrix4fv(glGetUniformLocation(bgShader.shaderProgram, "view"), 1, GL_FALSE, glm::value_ptr(view));
-        glUniformMatrix4fv(glGetUniformLocation(bgShader.shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(bgBeta.model));
-        bgBeta.render(&bgShader, projection);
-        
-        shader.use();
-        player.update(&shader);
-        glUniformMatrix4fv(glGetUniformLocation(shader.shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-        glUniformMatrix4fv(glGetUniformLocation(shader.shaderProgram, "view"), 1, GL_FALSE, glm::value_ptr(view));
-        glUniformMatrix4fv(glGetUniformLocation(shader.shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(player.model));
-        player.render(&shader);
+        projection = glm::ortho(0.0f, (float)display_w, 0.0f, (float)display_h, -10.0f, 10.0f);
+        view = glm::lookAt(camera.cameraPos, camera.cameraPos + camera.cameraFaceDirection, camera.cameraUp);
 
-        cShader.use();
-        player.hitbox.render(&cShader, projection, view);
-        player.collision.render(&cShader, projection, view);
+        if(menu.display) {
+            glfwGetCursorPos(window, &menu.cursor_position_x, &menu.cursor_position_y);
+            menuShader.use();
+            menu.checkMousePress(window);
+            menu.render(&menuShader, projection);
+        }
+
+        if(gameStart) {
+            // projection = glm::ortho(0.0f, (float)display_w, 0.0f, (float)display_h, -10.0f, 10.0f);
+            // view = glm::lookAt(camera.cameraPos, camera.cameraPos + camera.cameraFaceDirection, camera.cameraUp);
+
+            player.processInput(window);
+            // processInput(window);
+
+            bgShader.use();
+            bgBeta.experimentalScale((float)(display_w / bgBeta.bgWidth), (float)(display_h / bgBeta.bgHeight));
+            glUniformMatrix4fv(glGetUniformLocation(bgShader.shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+            glUniformMatrix4fv(glGetUniformLocation(bgShader.shaderProgram, "view"), 1, GL_FALSE, glm::value_ptr(view));
+            glUniformMatrix4fv(glGetUniformLocation(bgShader.shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(bgBeta.model));
+            bgBeta.render(&bgShader, projection);
+            
+            shader.use();
+            player.update(&shader);
+            glUniformMatrix4fv(glGetUniformLocation(shader.shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+            glUniformMatrix4fv(glGetUniformLocation(shader.shaderProgram, "view"), 1, GL_FALSE, glm::value_ptr(view));
+            glUniformMatrix4fv(glGetUniformLocation(shader.shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(player.model));
+            player.render(&shader);
+
+            cShader.use();
+            player.hitbox.render(&cShader, projection, view);
+            player.collision.render(&cShader, projection, view);
+        }
+
 
         // shader.use();
         // glUniformMatrix4fv(glGetUniformLocation(shader.shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(player.model));

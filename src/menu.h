@@ -1,11 +1,6 @@
 #ifndef MENU_H
 #define MENU_H
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-
 #include "../libs/shader.h"
 
 // #include "entity.h"
@@ -16,9 +11,11 @@ class Menu {
         
 
     public:
+        bool display = true;
         int* display_w;
         int* display_h;
         double cursor_position_x, cursor_position_y;
+        bool mousePressed = false;
 
         Button buttons[4];
         int currentButtonIndex = 0;
@@ -28,8 +25,8 @@ class Menu {
             display_h = display_height;
         }
 
-        void addButton(char* texturePath, float width, float height, float x, float y) {
-            Button newButton(texturePath, width, height, x, y);
+        void addButton(char* texturePath, float width, float height, float x, float y, char* buttonName) {
+            Button newButton(texturePath, width, height, x, y, buttonName);
 
             newButton.active = true;
 
@@ -52,7 +49,28 @@ class Menu {
             }
         }
 
+        void checkMousePress(GLFWwindow* window) {
+            if(glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+                mousePressed = true;
+            }
+            else {
+                mousePressed = false;
+            }
+        }
+
+        void runAction(Button currentButton) {
+            if(currentButton.name == (char*)"play") {
+                startGame();
+            }
+        }
+
+        void startGame() {
+            gameStart = true;
+            display = false;
+        }
+
         void render(Shader* menuShader, glm::mat4 projection) {
+            // std::cout << mousePressed << std::endl;
             // std::cout << cursor_position_x << "\t" << abs(cursor_position_y - (double)600.0) << std::endl;
 
             for(int i = 0; i < sizeof(buttons) / sizeof(buttons[0]); ++i) {
@@ -60,6 +78,9 @@ class Menu {
 
                 if(currentButton.active) {
                     if(checkHover(currentButton)) currentButton.scale(2.0f, 2.0f);
+                    if(checkHover(currentButton) && mousePressed) {
+                        runAction(currentButton);
+                    }
                     currentButton.setProjection(menuShader, projection);
                     currentButton.setUniformMatrix4fv(menuShader, (char*)"model");
                     currentButton.render();

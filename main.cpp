@@ -33,8 +33,6 @@ bool gameStart = false;
 
 Camera camera;
 
-Menu menu(&display_w, &display_h);
-
 void processInput(GLFWwindow* window, PlayerMenu* playerMenu) {
     // if(glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) {
     //     glfwSetWindowShouldClose(window, true);
@@ -95,6 +93,8 @@ int main() {
     Shader cShader("shaders/collision/collisionVertexShader.glsl", "shaders/collision/collisionFragmentShader.glsl");
     Shader menuShader("shaders/menu/menuVertexShader.glsl", "shaders/menu/menuFragmentShader.glsl");
 
+    Menu menu(&display_w, &display_h, (char*)"src\\assets\\bg.jpg");
+
     menu.addButton((char*)"src\\assets\\playbutton.png", 100.0f, 50.0f, 350.0f, 275.0f, (char*)"play");
     // menu.addButton((char*)"src\\assets\\quitbutton.png", 100.0f, 50.0f, 350.0f, 175.0f, (char*)"quit");
     menu.setDisplay(true);
@@ -131,6 +131,7 @@ int main() {
         if(menu.display) {
             menu.updateMenuCursor(window);
             menuShader.use();
+            menu.experimentalScale((float)(display_w / menu.menuWidth), (float)(display_h / menu.menuHeight));
             menu.render(window, &menuShader, projection);
         }
 

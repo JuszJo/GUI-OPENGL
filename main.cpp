@@ -131,7 +131,12 @@ int main() {
         if(menu.display) {
             menu.updateMenuCursor(window);
             menuShader.use();
-            menu.experimentalScale((float)(display_w / menu.menuWidth), (float)(display_h / menu.menuHeight));
+            // menu.experimentalScale((float)(display_w / menu.menuWidth), (float)(display_h / menu.menuHeight));
+            if(menu.menuWidth != (float)display_w && menu.menuHeight != (float)display_h){
+                // printf("width: %d, height: %d\n", display_w, display_h);
+                menu.updateMenuItems((float)(display_w / menu.menuWidth), (float)(display_h / menu.menuHeight));
+                menu.experimentalSizeUpdate((float)display_w, (float)display_h);
+            }
             menu.render(window, &menuShader, projection);
         }
 

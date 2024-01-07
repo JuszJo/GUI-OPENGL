@@ -98,6 +98,49 @@ class Menu {
             stbi_image_free(imageData);
         }
 
+        void experimentalSizeUpdate(float newWidth, float newHeight) {
+            model = glm::mat4(1.0f);
+
+            menuWidth = newWidth;
+            menuHeight = newHeight;
+
+            float vertices[] = {
+                0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+                0.0f + newWidth, 0.0f, 0.0f, 1.0f, 1.0f,
+                0.0f, 0.0f + newHeight, 0.0f, 0.0f, 0.0f,
+                0.0f + newWidth, 0.0f + newHeight, 0.0f, 1.0f, 0.0f
+            };
+
+            glGenVertexArrays(1, &VAO);
+            glGenBuffers(1, &VBO);
+
+            glBindVertexArray(VAO);
+
+            glBindBuffer(GL_ARRAY_BUFFER, VBO);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), nullptr);
+            glEnableVertexAttribArray(0);
+
+            glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+            glEnableVertexAttribArray(1);
+
+            glBindVertexArray(0);
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+        }
+
+        void updateMenuItems(float scaleFactorX, float scaleFactorY) {
+            for(int i = 0; i < sizeof(buttons) / sizeof(buttons[0]); ++i) {
+                if(buttons[i].active) {
+                    float dWidth = buttons[i].buttonWidth - buttons[i].buttonWidth * scaleFactorX;
+                    float dHeight = buttons[i].buttonHeight - buttons[i].buttonHeight * scaleFactorY;
+
+                    buttons[i].setPosition((buttons[i].buttonX * scaleFactorX) - (dWidth / 2.0f), (buttons[i].buttonY * scaleFactorY) - (dHeight / 2.0f));
+                    // buttons[i].experimentalSizeUpdate(buttons[i].buttonWidth * scaleFactorX, buttons[i].buttonHeight * scaleFactorY);
+                }
+            }
+        }
+
         void experimentalScale(float scaleFactorX, float scaleFactorY) {
             model = glm::scale(model, glm::vec3(scaleFactorX, scaleFactorY, 1.0f));
 
@@ -171,7 +214,8 @@ class Menu {
                 Button currentButton = buttons[i];
 
                 if(currentButton.active) {
-                    if(checkHover(currentButton)) currentButton.scale(2.0f, 2.0f);
+                    // if(checkHover(currentButton)) currentButton.scale(2.0f, 2.0f);
+                    if(checkHover(currentButton)) currentButton.experimentalSizeUpdate(currentButton.buttonWidth * 2.0f, currentButton.buttonHeight * 2.0f);
                     if(checkHover(currentButton) && mousePressed) {
                         runAction(currentButton);
                     }

@@ -62,6 +62,58 @@ class Button: public Entity {
             updatePosition(newButtonX, newButtonY);
         }
 
+        void experimentalSizeUpdate(float newWidth, float newHeight) {
+            float dWidth = buttonWidth - newWidth;
+            float dHeight = buttonHeight - newHeight;
+
+            if(axis == (char*)"center") {
+                model = glm::mat4(1.0f);
+
+                float newButtonX = buttonX + (dWidth / 2.0f);
+                float newButtonY = buttonY + (dHeight / 2.0f);
+
+                // printf("current buttonX: %f, new buttonX: %f\n", buttonX, newButtonX);
+
+                float vertices[20] = {
+                    newButtonX, newButtonY, 0.0f, 0.0f, 1.0f,
+                    newButtonX + newWidth, newButtonY, 0.0f, 1.0f, 1.0f,
+                    newButtonX, newButtonY + newHeight, 0.0f, 0.0f, 0.0f,
+                    newButtonX + newWidth, newButtonY + newHeight, 0.0f, 1.0f, 0.0f
+                };
+
+                genVertexandBuffers(&VAO, &VBO);
+                bindVAO(VAO);
+
+                int verticeSize = sizeof(vertices);
+                handleVertexBufferObject(VBO, vertices, verticeSize);
+
+                buttonX = newButtonX;
+                buttonY = newButtonY;
+            }
+            else {
+                float vertices[20] = {
+                    buttonX, buttonY, 0.0f, 0.0f, 1.0f,
+                    buttonX + newWidth, buttonY, 0.0f, 1.0f, 1.0f,
+                    buttonX, buttonY + newHeight, 0.0f, 0.0f, 0.0f,
+                    buttonX + newWidth, buttonY + newHeight, 0.0f, 1.0f, 0.0f
+                };
+
+                genVertexandBuffers(&VAO, &VBO);
+                bindVAO(VAO);
+
+                int verticeSize = sizeof(vertices);
+                handleVertexBufferObject(VBO, vertices, verticeSize);
+            }
+
+            buttonWidth = newWidth;
+            buttonHeight = newHeight;
+
+            handleVertexArrayObject(0, 3, stride, 0);
+            handleVertexArrayObject(1, 2, stride, 3);
+
+            cleanupBuffers();
+        }
+
         void scale(float scaleFactorX, float scaleFactorY) {
             float scaledWidth = buttonWidth * scaleFactorX;
             float scaledHeight = buttonHeight * scaleFactorY;

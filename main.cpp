@@ -140,7 +140,7 @@ int main() {
                 if(scaleFactorX == 0.0f) scaleFactorX = 1.0f;
                 if(scaleFactorY == 0.0f) scaleFactorY = 1.0f;
                 // printf("x: %f, y: %f\n", scaleFactorX, scaleFactorY);
-                menu.updateMenuItems(scaleFactorX, scaleFactorY);
+                menu.updateMenuItems(scaleFactorX, scaleFactorY, window);
                 if(display_w != 0 && display_h != 0) {
                     menu.experimentalSizeUpdate((float)display_w, (float)display_h);
                 }

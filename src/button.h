@@ -114,16 +114,30 @@ class Button: public Entity {
             cleanupBuffers();
         }
 
+        void processInput(GLFWwindow* window){
+            if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+                // printf("OMOMOMOMOM\n");
+                std::cout << model[3][0] << std::endl;
+                // std::cout << model[1][1] << std::endl;
+                model = glm::scale(model, glm::vec3(1.001f, 1.001f, 1.0f));
+            }
+            if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) {
+                // printf("OMOMOMOMOM\n");
+                model = glm::translate(model, glm::vec3(1.01f, 0.0f, 0.0f));
+                buttonX += 1.01f;
+            }
+        }
+
         void scale(float scaleFactorX, float scaleFactorY) {
             float scaledWidth = buttonWidth * scaleFactorX;
             float scaledHeight = buttonHeight * scaleFactorY;
 
             if(axis == (char*)"center") {
-                float dWidth = scaledWidth - buttonWidth;
-                float dHeight = scaledHeight - buttonHeight;
+                float dWidth = buttonWidth - scaledWidth;
+                float dHeight = buttonHeight - scaledHeight;
 
-                float newButtonX = buttonX - (dWidth / 2);
-                float newButtonY = buttonY - (dHeight / 2);
+                float newButtonX = buttonX + (dWidth / 2);
+                float newButtonY = buttonY + (dHeight / 2);
 
                 model = glm::translate(model, glm::vec3(buttonX + (buttonWidth / 2), buttonY + (buttonHeight / 2), 0.0f));
 

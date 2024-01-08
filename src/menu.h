@@ -129,9 +129,10 @@ class Menu {
             glBindBuffer(GL_ARRAY_BUFFER, 0);
         }
 
-        void updateMenuItems(float scaleFactorX, float scaleFactorY) {
+        void updateMenuItems(float scaleFactorX, float scaleFactorY, GLFWwindow* window) {
             for(int i = 0; i < sizeof(buttons) / sizeof(buttons[0]); ++i) {
                 if(buttons[i].active) {
+                    // buttons[i].processInput(window);
                     float dWidth = buttons[i].buttonWidth - buttons[i].buttonWidth * scaleFactorX;
                     float dHeight = buttons[i].buttonHeight - buttons[i].buttonHeight * scaleFactorY;
 

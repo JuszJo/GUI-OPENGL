@@ -157,6 +157,18 @@ class Player: public Entity {
             }
             else if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
                 // if(currentState != DOWN) currentState = DOWN;
+                // resetModel();
+                // setPosition(400.0f, 300.0f);
+            }
+            else if(glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS) {
+                // if(currentState != DOWN) currentState = DOWN;
+                // resetModel();
+                // model = glm::scale(model, glm::vec3(2.0f, 2.0f, 1.0f));
+            }
+            else if(glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
+                // if(currentState != DOWN) currentState = DOWN;
+                // resetModel();
+                // resetPlayer();
             }
             else {
                 currentState = IDLE;
@@ -240,6 +252,8 @@ class Player: public Entity {
             model = glm::translate(model, speed);
             playerX += speed.x;
             playerY += speed.y;
+
+            // printf("x: %f, y: %f\n", playerX, playerY);
         }
 
         void updatePosition(float newPlayerX, float newPlayerY) {
@@ -332,6 +346,7 @@ class Player: public Entity {
             glBindTexture(GL_TEXTURE_2D, *animation.currentAnimatedState[0].TBO);
             glBindVertexArray(VAO);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+            // resetModel();
         }
 
         void update() {
@@ -347,12 +362,18 @@ class Player: public Entity {
             hitbox.updateAxis(playerX, playerY);
         }
 
+        void resetModel() {
+            model = glm::mat4(1.0f);
+        }
+
         void resetPlayer() {
             setPosition(0.0f, 500.0f);
             
             hitbox.updateAxis(0.0f, 500.0f);
 
             speed = glm::vec3(0.0f, 0.0f, 0.0f);
+
+            model = glm::mat4(1.0f);
 
             currentState = IDLE;
             currentAltState = NONE;

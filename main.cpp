@@ -134,8 +134,16 @@ int main() {
             // menu.experimentalScale((float)(display_w / menu.menuWidth), (float)(display_h / menu.menuHeight));
             if(menu.menuWidth != (float)display_w && menu.menuHeight != (float)display_h){
                 // printf("width: %d, height: %d\n", display_w, display_h);
-                menu.updateMenuItems((float)(display_w / menu.menuWidth), (float)(display_h / menu.menuHeight));
-                menu.experimentalSizeUpdate((float)display_w, (float)display_h);
+                // printf("menuwidth: %f, menuheight: %f\n", menu.menuWidth, menu.menuHeight);
+                float scaleFactorX = (float)(display_w / menu.menuWidth);
+                float scaleFactorY = (float)(display_h / menu.menuHeight);
+                if(scaleFactorX == 0.0f) scaleFactorX = 1.0f;
+                if(scaleFactorY == 0.0f) scaleFactorY = 1.0f;
+                // printf("x: %f, y: %f\n", scaleFactorX, scaleFactorY);
+                menu.updateMenuItems(scaleFactorX, scaleFactorY);
+                if(display_w != 0 && display_h != 0) {
+                    menu.experimentalSizeUpdate((float)display_w, (float)display_h);
+                }
             }
             menu.render(window, &menuShader, projection);
         }

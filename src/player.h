@@ -241,6 +241,8 @@ class Player: public Entity {
                     animation.setCurrentAnimation((char*)"attack", 3.0f, 4, 3, texture, reversed);
                     // speed = glm::vec3(-acceleration, speed.y, 0.0f);
                     animation.shouldAnimate = true;
+
+                    checkEnemyCollision(attackHitbox.position_x, attackHitbox.position_y, attackHitbox.width, attackHitbox.height);
                     // std::cout << "ATTACKING\n";
                     // std::cout << animation.currentFrame << std::endl;
                     if(animation.currentFrame == (currentState == LEFT ? 1 : 3)) {
@@ -282,6 +284,10 @@ class Player: public Entity {
         }
 
         void scale(float scaleFactorX, float scaleFactorY) {
+            
+        }
+
+        void checkEnemyCollision(float position_x, float position_y, float width, float height) {
             
         }
 

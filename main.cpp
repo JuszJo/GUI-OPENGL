@@ -29,6 +29,7 @@ bool gameStart = false;
 #include "src/menu.h"
 #include "src/background.h"
 #include "src/player.h"
+#include "src/enemy.h"
 #include "src/playerMenu.h"
 
 Camera camera;
@@ -102,6 +103,10 @@ int main() {
     BackgroundBeta bgBeta((char*)"src\\assets\\bg.jpg", 0.0f, 0.0f, 600.0f, 600.0f);
     Player player((char*)"src\\assets\\player.png", 0.0f, 500.0f, 78.0f, 58.0f);
     player.camera = &camera;
+
+    Enemy enemy((char*)"src\\assets\\player.png", 400.0f, 500.0f, 78.0f, 58.0f);
+    enemy.camera = &camera;
+
     PlayerMenu playerMenu(&menu, &player, &display_w, &display_h);
     playerMenu.addButton((char*)"src\\assets\\playbutton.png", 100.0f, 50.0f, 350.0f, 275.0f, (char*)"play");
     playerMenu.addButton((char*)"src\\assets\\quitbutton.png", 100.0f, 50.0f, 350.0f, 175.0f, (char*)"quit");
@@ -165,6 +170,9 @@ int main() {
                 shader.use();
                 player.update();
                 player.render(&shader, projection, view);
+
+                enemy.update();
+                enemy.render(&shader, projection, view);
 
                 cShader.use();
                 player.hitbox.render(&cShader, projection, view);

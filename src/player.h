@@ -54,6 +54,7 @@ class Player: public Entity {
         Collision collision;
 
         Hitbox hitbox;
+        Hitbox attackHitbox;
 
         // default constructor
         Player() {}
@@ -99,6 +100,12 @@ class Player: public Entity {
             newHitbox.defineOffset(18.0f, 10.0f);
 
             hitbox = newHitbox;
+
+            Hitbox newAttackHitbox(x, y, 50.0f, 40.0f);
+
+            newAttackHitbox.defineOffset(18.0f, 10.0f);
+
+            attackHitbox = newAttackHitbox;
         }
 
         void loadImage(char* path, unsigned int* TBO) {
@@ -356,10 +363,12 @@ class Player: public Entity {
             move();
             animation.animate();
             hitbox.updateAxis(playerX, playerY);
+            attackHitbox.updateAxis(playerX, playerY);
             // checkCollision(playerX, playerY, playerWidth, playerHeight);
             checkWallCollision();
             checkCollision(hitbox.position_x, hitbox.position_y, hitbox.width, hitbox.height);
             hitbox.updateAxis(playerX, playerY);
+            attackHitbox.updateAxis(playerX, playerY);
         }
 
         void resetModel() {

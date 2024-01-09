@@ -21,7 +21,7 @@ struct Camera {
 
 int display_w, display_h;
 
-bool settingShowHitbox = false;
+bool settingShowHitbox = true;
 bool settingShowCollisionbox = false;
 
 bool gameStart = false;
@@ -168,6 +168,7 @@ int main() {
 
                 cShader.use();
                 player.hitbox.render(&cShader, projection, view);
+                player.attackHitbox.render(&cShader, projection, view);
                 player.collision.render(&cShader, projection, view);
             }
         }

@@ -83,6 +83,18 @@ class Collision {
             else return false;
         }
 
+        bool didCollideBest(float position_x, float position_y, float width, float height, float nextPosition_x, float nextPosition_y, float nextWidth, float nextHeight) {
+            if(
+                position_x < nextPosition_x + nextWidth &&
+                position_x + width > nextPosition_x &&
+                position_y < nextPosition_y + nextHeight &&
+                position_y + height > nextPosition_y
+            ) {
+                return true;
+            }
+            else return false;
+        }
+
         // CollisionInfo checkCollision(float position_x, float position_y, float width, float height) {
         //     bool collisionOccured = false;
 

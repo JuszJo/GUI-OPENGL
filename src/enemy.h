@@ -7,16 +7,18 @@
 #include "collision.h"
 #include "hitbox.h"
 
-// struct CollisionInfo {
-//     char* side;
-//     float overlap;
-// };
+struct CollisionInfo {
+    char* side;
+    float overlap;
+};
 
 class Enemy: public Entity {
     private:
         int stride = 5;
 
     public:
+        bool active = false;
+
         unsigned int TBO2, TBO3, TBO4, TBO5, TBO6;
 
         float enemyWidth, enemyHeight, enemyX, enemyY;

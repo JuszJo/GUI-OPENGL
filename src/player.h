@@ -6,11 +6,12 @@
 #include "gravity.h"
 #include "collision.h"
 #include "hitbox.h"
+#include "enemy.h"
 
-struct CollisionInfo {
-    char* side;
-    float overlap;
-};
+// struct CollisionInfo {
+//     char* side;
+//     float overlap;
+// };
 
 class Player: public Entity {
     private:
@@ -55,6 +56,8 @@ class Player: public Entity {
 
         Hitbox hitbox;
         Hitbox attackHitbox;
+
+        Enemy* enemies[1];
 
         // default constructor
         Player() {}
@@ -106,6 +109,9 @@ class Player: public Entity {
             newAttackHitbox.defineOffset(18.0f, 10.0f);
 
             attackHitbox = newAttackHitbox;
+
+            Enemy placeHolder((char*)"src\\assets\\player.png", 400.0f, 500.0f, 78.0f, 58.0f);
+            enemies[0] = &placeHolder;
         }
 
         void loadImage(char* path, unsigned int* TBO) {
@@ -288,7 +294,14 @@ class Player: public Entity {
         }
 
         void checkEnemyCollision(float position_x, float position_y, float width, float height) {
-            
+            for(int i = 0; i < sizeof(enemies) / sizeof(enemies[0]); ++i) {
+                if(collision.didCollideBest(
+                    position_x, position_y, width, height, 
+                    enemies[i] -> hitbox.position_x, enemies[i] -> hitbox.position_y, enemies[i] -> hitbox.width, enemies[i] -> hitbox.height
+                )) {
+                    printf("STRIKE\n");
+                }
+            }
         }
 
         void checkCollision(float position_x, float position_y, float width, float height) {

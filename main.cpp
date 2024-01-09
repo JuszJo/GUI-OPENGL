@@ -105,7 +105,10 @@ int main() {
     player.camera = &camera;
 
     Enemy enemy((char*)"src\\assets\\player.png", 400.0f, 500.0f, 78.0f, 58.0f);
+    enemy.active = true;
     enemy.camera = &camera;
+
+    player.enemies[0] = &enemy;
 
     PlayerMenu playerMenu(&menu, &player, &display_w, &display_h);
     playerMenu.addButton((char*)"src\\assets\\playbutton.png", 100.0f, 50.0f, 350.0f, 275.0f, (char*)"play");

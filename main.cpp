@@ -118,6 +118,8 @@ int main() {
     // bgBeta.experimentalScale(10.0f, 1.0f);
     EnemyFactory enemyFactory((char*)"src\\assets\\enemy.png", 0.0f, 0.0f, 34.0f * 2.0f, 28.0f * 2.0f);
     enemyFactory.addEnemy(400.0f, 500.0f);
+
+    player.enemyFactory = &enemyFactory;
     // enemyFactory.addEnemy(200.0f, 200.0f);
 
     glm::mat4 projection = glm::mat4(1.0f);

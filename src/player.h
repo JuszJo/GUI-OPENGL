@@ -7,6 +7,7 @@
 #include "collision.h"
 #include "hitbox.h"
 #include "enemy.h"
+#include "enemyFactory.h"
 #include "keyinput.h"
 
 // struct CollisionInfo {
@@ -61,6 +62,8 @@ class Player: public Entity {
         Hitbox attackHitbox;
 
         Enemy* enemies[1];
+
+        EnemyFactory* enemyFactory;
 
         // default constructor
         Player() {}
@@ -304,17 +307,40 @@ class Player: public Entity {
             
         }
 
-        /* void checkEnemyCollision(float position_x, float position_y, float width, float height) {
-            for(int i = 0; i < sizeof(enemies) / sizeof(enemies[0]); ++i) {
+        void checkEnemyCollision(float position_x, float position_y, float width, float height) {
+            for(int i = 0; i < sizeof(enemyFactory -> factoryEnemies) / sizeof(enemyFactory -> factoryEnemies[0]); ++i) {
+                EnemyFactory::EnemyData currentEnemy = enemyFactory -> factoryEnemies[i];
+
                 if(collision.didCollideBest(
                     position_x, position_y, width, height, 
-                    enemies[i] -> hitbox.position_x, enemies[i] -> hitbox.position_y, enemies[i] -> hitbox.width, enemies[i] -> hitbox.height
+                    currentEnemy.hitbox.position_x, currentEnemy.hitbox.position_y, currentEnemy.hitbox.width, currentEnemy.hitbox.height
                 )) {
                     // printf("STRIKE\n");
-                    enemies[i] -> currentAltState = enemies[i] -> ATTACKED;
+                    float bottom = (float)abs(position_y - (currentEnemy.hitbox.position_y + enemyFactory -> height));
+                    float top = (float)abs((position_y + height) - currentEnemy.hitbox.position_y);
+
+                    float left = (float)abs(position_x - (currentEnemy.hitbox.position_x + enemyFactory -> width));
+                    float right = (float)abs((position_x + width) - currentEnemy.hitbox.position_x);
+
+                    CollisionInfo xInfo = {collision.getCollideAxisX(left, right), collision.getCollideAxisX(left, right) == (char*)"left" ? left : right};
+                    CollisionInfo yInfo = {collision.getCollideAxisY(bottom, top), collision.getCollideAxisY(bottom, top) == (char*)"bottom" ? bottom : top};
+
+                    CollisionInfo final = {xInfo.overlap < yInfo.overlap ? xInfo.side : yInfo.side, xInfo.overlap < yInfo.overlap ? xInfo.overlap : yInfo.overlap};
+                    // printf("x: %f\n", xInfo.overlap);
+                    // printf("y: %f\n", yInfo.overlap);
+
+                    if(final.side == (char*)"bottom") {
+                        // printf("bottom\n");
+                        // enemyFactory -> factoryEnemies[i].active = false;
+                    }
+                    if(final.side == (char*)"right") {
+                        // printf("right\n");
+                        // enemyFactory -> factoryEnemies[i].active = false;
+                    }
+                    // enemies[i] -> currentAltState = enemies[i] -> ATTACKED;
                 }
             }
-        } */
+        }
 
         void checkCollision(float position_x, float position_y, float width, float height) {
             for(int i = 0; i < sizeof(collision.blocks) / sizeof(collision.blocks[0]); ++i) {
@@ -401,6 +427,7 @@ class Player: public Entity {
             checkCollision(hitbox.position_x, hitbox.position_y, hitbox.width, hitbox.height);
             hitbox.updateAxis(playerX, playerY);
             attackHitbox.updateAxis(playerX, playerY);
+            // checkEnemyCollision(hitbox.position_x, hitbox.position_y, hitbox.width, hitbox.height);
         }
 
         void resetModel() {

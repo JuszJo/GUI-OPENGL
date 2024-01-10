@@ -113,8 +113,8 @@ class Player: public Entity {
 
             attackHitbox = newAttackHitbox;
 
-            Enemy placeHolder((char*)"src\\assets\\player.png", 400.0f, 500.0f, 78.0f, 58.0f);
-            enemies[0] = &placeHolder;
+            // Enemy placeHolder((char*)"src\\assets\\player.png", 400.0f, 500.0f, 78.0f, 58.0f);
+            // enemies[0] = &placeHolder;
         }
 
         void loadImage(char* path, unsigned int* TBO) {
@@ -259,7 +259,7 @@ class Player: public Entity {
                     // speed = glm::vec3(-acceleration, speed.y, 0.0f);
                     animation.shouldAnimate = true;
 
-                    checkEnemyCollision(attackHitbox.position_x, attackHitbox.position_y, attackHitbox.width, attackHitbox.height);
+                    // checkEnemyCollision(attackHitbox.position_x, attackHitbox.position_y, attackHitbox.width, attackHitbox.height);
                     // std::cout << "ATTACKING\n";
                     // std::cout << animation.currentFrame << std::endl;
                     if(animation.currentFrame == (currentState == LEFT ? 1 : 3)) {
@@ -304,7 +304,7 @@ class Player: public Entity {
             
         }
 
-        void checkEnemyCollision(float position_x, float position_y, float width, float height) {
+        /* void checkEnemyCollision(float position_x, float position_y, float width, float height) {
             for(int i = 0; i < sizeof(enemies) / sizeof(enemies[0]); ++i) {
                 if(collision.didCollideBest(
                     position_x, position_y, width, height, 
@@ -314,7 +314,7 @@ class Player: public Entity {
                     enemies[i] -> currentAltState = enemies[i] -> ATTACKED;
                 }
             }
-        }
+        } */
 
         void checkCollision(float position_x, float position_y, float width, float height) {
             for(int i = 0; i < sizeof(collision.blocks) / sizeof(collision.blocks[0]); ++i) {

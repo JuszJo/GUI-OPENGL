@@ -7,17 +7,18 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "../libs/stb_image.h"
+// #include "../libs/stb_image.h"
 
 #include "../libs/shader.h"
 
 class EntityV2 {
+    private:
+        glm::mat4 model = glm::mat4(1.0f);
+
     public:
         unsigned int VAO, VBO, EBO, TBO;
 
         float x, y, width, height;
-
-        glm::mat4 model = glm::mat4(1.0f);
 
         void updatePosition(float newX, float newY) {
             x = newX;
@@ -29,7 +30,7 @@ class EntityV2 {
             height = newHeight;
         }
 
-        void setPosition(float newX, float newY) {
+        virtual void setPosition(float newX, float newY) {
             model = glm::translate(model, glm::vec3(newX, newY, 0.0f));
 
             model = glm::translate(model, glm::vec3(-x, -y, 0.0f));

@@ -45,6 +45,7 @@ class Enemy: public Entity {
 
         enum ALTSTATE {
             ATTACK,
+            ATTACKED,
             NONE
         };
 
@@ -252,6 +253,11 @@ class Enemy: public Entity {
                     }
                     
                     break;
+
+                case ATTACKED:
+                    // speed.y = 5.0f;
+                    setPosition(enemyX + 5.0f, enemyY + 5.0f);
+                    currentAltState = NONE;
 
                 default:
                     

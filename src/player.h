@@ -299,7 +299,8 @@ class Player: public Entity {
                     position_x, position_y, width, height, 
                     enemies[i] -> hitbox.position_x, enemies[i] -> hitbox.position_y, enemies[i] -> hitbox.width, enemies[i] -> hitbox.height
                 )) {
-                    printf("STRIKE\n");
+                    // printf("STRIKE\n");
+                    enemies[i] -> currentAltState = enemies[i] -> ATTACKED;
                 }
             }
         }

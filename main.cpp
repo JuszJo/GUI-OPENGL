@@ -116,8 +116,9 @@ int main() {
     playerMenu.addButton((char*)"src\\assets\\quitbutton.png", 100.0f, 50.0f, 350.0f, 175.0f, (char*)"quit");
 
     // bgBeta.experimentalScale(10.0f, 1.0f);
-    EnemyFactory enemyFactory((char*)"src\\assets\\enemy.png", 400.0f, 500.0f, 34.0f * 2.0f, 28.0f * 2.0f);
+    EnemyFactory enemyFactory((char*)"src\\assets\\enemy.png", 0.0f, 0.0f, 34.0f * 2.0f, 28.0f * 2.0f);
     enemyFactory.addEnemy(400.0f, 500.0f);
+    // enemyFactory.addEnemy(200.0f, 200.0f);
 
     glm::mat4 projection = glm::mat4(1.0f);
     glm::mat4 view = glm::lookAt(camera.cameraPos, camera.cameraPos + camera.cameraFaceDirection, camera.cameraUp);
@@ -167,6 +168,7 @@ int main() {
                 playerMenu.render(window, &menuShader, projection);
             }
             else {
+                if(glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) enemyFactory.addEnemy(100.0f, 200.0f);
                 player.keyInput.processInput(window);
 
                 bgShader.use();
@@ -185,7 +187,7 @@ int main() {
 
                 cShader.use();
                 // player.hitbox.render(&cShader, projection, view);
-                enemyFactory.factoryEnemies[0].hitbox.render(&cShader, projection, view);
+                // enemyFactory.factoryEnemies[0].hitbox.render(&cShader, projection, view);
                 // player.attackHitbox.render(&cShader, projection, view);
                 // player.collision.render(&cShader, projection, view);
             }

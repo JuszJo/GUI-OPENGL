@@ -19,7 +19,8 @@ class EnemyFactory: public EntityV2 {
             Animation animation;
         };
 
-        EnemyData factoryEnemies[1];
+        EnemyData factoryEnemies[2];
+        int currentEnemyIndex = 0;
 
         Gravity gravity;
 
@@ -76,14 +77,17 @@ class EnemyFactory: public EntityV2 {
             // factoryEnemies[0] = enemy;
         }
 
-        void addEnemy(float x, float y) {
+        void addEnemy(float position_x, float position_y) {
+            if(currentEnemyIndex > 1) {
+                return;
+            }
             EnemyData enemy;
 
-            enemy.x = x;
-            enemy.y = y;
+            enemy.x = position_x;
+            enemy.y = position_y;
 
-            Hitbox newHitbox(x, y, 30.0f, height);
-            newHitbox.defineOffset(18.0f, 10.0f);
+            Hitbox newHitbox(position_x, position_y, 40.0f, 30.0f);
+            newHitbox.defineOffset(18.0f, 0.0f);
             enemy.hitbox = newHitbox;
 
             Animation newAnimation((char*)"idle", 11.0f, 4, 1, &TBO, false);
@@ -92,7 +96,9 @@ class EnemyFactory: public EntityV2 {
 
             enemy.active = true;
 
-            factoryEnemies[0] = enemy;
+            factoryEnemies[currentEnemyIndex] = enemy;
+
+            ++currentEnemyIndex;
         }
 
         // void setPosition(float newX, float newY) override {
@@ -164,10 +170,11 @@ class EnemyFactory: public EntityV2 {
         void update() {
             for(int i = 0; i < sizeof(factoryEnemies) / sizeof(EnemyData); ++i) {
                 if(factoryEnemies[i].active) {
+                    factoryEnemies[i].model = glm::mat4(1.0f);
                     gravity.applyGravity(&factoryEnemies[i].speed);
-                    factoryEnemies[i].model = glm::translate(factoryEnemies[i].model, factoryEnemies[i].speed);
                     factoryEnemies[i].x += factoryEnemies[i].speed.x;
                     factoryEnemies[i].y += factoryEnemies[i].speed.y;
+                    factoryEnemies[i].model = glm::translate(factoryEnemies[i].model, glm::vec3(factoryEnemies[i].x, factoryEnemies[i].y, 0.0f));
                     factoryEnemies[i].hitbox.updateAxis(factoryEnemies[i].x, factoryEnemies[i].y);
                     // checkWallCollision();
                     checkCollision(

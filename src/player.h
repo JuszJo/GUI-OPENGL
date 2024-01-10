@@ -7,6 +7,7 @@
 #include "collision.h"
 #include "hitbox.h"
 #include "enemy.h"
+#include "keyinput.h"
 
 // struct CollisionInfo {
 //     char* side;
@@ -49,6 +50,8 @@ class Player: public Entity {
 
         STATE currentState = IDLE;
         ALTSTATE currentAltState = NONE;
+
+        KeyInput keyInput;
 
         Gravity gravity;
 
@@ -147,7 +150,7 @@ class Player: public Entity {
             stbi_image_free(imageData);
         }
 
-        void processInput(GLFWwindow* window) {
+        /* void processInput(GLFWwindow* window) {
             // if(glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) {
             //     glfwSetWindowShouldClose(window, true);
             // }
@@ -186,6 +189,14 @@ class Player: public Entity {
             else {
                 currentState = IDLE;
             }
+        } */
+
+        void checkKeyInput() {
+            if(keyInput.key.a) currentState = LEFT;
+            if(keyInput.key.d) currentState = RIGHT;
+            if(keyInput.key.f) currentAltState = ATTACK;
+            if(keyInput.key.space) jump();
+            if(!keyInput.key.a && !keyInput.key.d) currentState = IDLE;
         }
 
         void jump() {
@@ -377,6 +388,7 @@ class Player: public Entity {
         }
 
         void update() {
+            checkKeyInput();
             gravity.applyGravity(&speed);
             checkState();
             checkAltState();

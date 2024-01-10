@@ -21,7 +21,7 @@ struct Camera {
 
 int display_w, display_h;
 
-bool settingShowHitbox = true;
+bool settingShowHitbox = false;
 bool settingShowCollisionbox = false;
 
 bool gameStart = false;
@@ -164,7 +164,7 @@ int main() {
                 playerMenu.render(window, &menuShader, projection);
             }
             else {
-                player.processInput(window);
+                player.keyInput.processInput(window);
 
                 bgShader.use();
                 bgBeta.experimentalScale((float)(display_w / bgBeta.bgWidth), (float)(display_h / bgBeta.bgHeight));

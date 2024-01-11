@@ -31,6 +31,8 @@ class EnemyFactory: public EntityV2 {
             float overlap;
         };
 
+        float sinNumber = 90.0f;
+
         EnemyFactory(char* texturePath, float position_x, float position_y, float size_width, float size_height) {
             x = position_x;
             y = position_y;
@@ -168,10 +170,20 @@ class EnemyFactory: public EntityV2 {
         }
 
         void update() {
+            // std::cout << sin(glm::radians(sinNumber)) * 5.0f << std::endl;
+
+            float timeTest = sin(glm::radians(sinNumber)) * 5.0f;
+
+            float speedX;
+
+            if(timeTest >= 0.0f) speedX = 1.0f;
+            else speedX = -1.0f;
+            
             for(int i = 0; i < sizeof(factoryEnemies) / sizeof(EnemyData); ++i) {
                 if(factoryEnemies[i].active) {
                     factoryEnemies[i].model = glm::mat4(1.0f);
                     gravity.applyGravity(&factoryEnemies[i].speed);
+                    factoryEnemies[i].speed.x = speedX;
                     factoryEnemies[i].x += factoryEnemies[i].speed.x;
                     factoryEnemies[i].y += factoryEnemies[i].speed.y;
                     factoryEnemies[i].model = glm::translate(factoryEnemies[i].model, glm::vec3(factoryEnemies[i].x, factoryEnemies[i].y, 0.0f));
@@ -185,6 +197,7 @@ class EnemyFactory: public EntityV2 {
                     factoryEnemies[i].hitbox.updateAxis(factoryEnemies[i].x, factoryEnemies[i].y);
                 }
             }
+            ++sinNumber;
         }
 
         void render(Shader* shader, glm::mat4 projection, glm::mat4 view) {

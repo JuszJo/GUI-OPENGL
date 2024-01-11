@@ -120,7 +120,7 @@ int main() {
     enemyFactory.addEnemy(400.0f, 500.0f);
 
     // player.enemyFactory = &enemyFactory;
-    // enemyFactory.addEnemy(200.0f, 200.0f);
+    enemyFactory.addEnemy(200.0f, 200.0f);
 
     glm::mat4 projection = glm::mat4(1.0f);
     glm::mat4 view = glm::lookAt(camera.cameraPos, camera.cameraPos + camera.cameraFaceDirection, camera.cameraUp);

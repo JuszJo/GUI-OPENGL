@@ -195,11 +195,13 @@ class Player: public Entity {
         } */
 
         void checkKeyInput() {
+            // if(keyInput.key.w) currentState = UP;
+            // if(keyInput.key.s) currentState = DOWN;
             if(keyInput.key.a) currentState = LEFT;
             if(keyInput.key.d) currentState = RIGHT;
             if(keyInput.key.f) currentAltState = ATTACK;
             if(keyInput.key.space) jump();
-            if(!keyInput.key.a && !keyInput.key.d) currentState = IDLE;
+            if(!keyInput.key.a && !keyInput.key.d && !keyInput.key.w && !keyInput.key.s) currentState = IDLE;
         }
 
         void jump() {
@@ -316,10 +318,10 @@ class Player: public Entity {
                     currentEnemy.hitbox.position_x, currentEnemy.hitbox.position_y, currentEnemy.hitbox.width, currentEnemy.hitbox.height
                 )) {
                     // printf("STRIKE\n");
-                    float bottom = (float)abs(position_y - (currentEnemy.hitbox.position_y + enemyFactory -> height));
+                    float bottom = (float)abs(position_y - (currentEnemy.hitbox.position_y + currentEnemy.hitbox.height));
                     float top = (float)abs((position_y + height) - currentEnemy.hitbox.position_y);
 
-                    float left = (float)abs(position_x - (currentEnemy.hitbox.position_x + enemyFactory -> width));
+                    float left = (float)abs(position_x - (currentEnemy.hitbox.position_x + currentEnemy.hitbox.width));
                     float right = (float)abs((position_x + width) - currentEnemy.hitbox.position_x);
 
                     CollisionInfo xInfo = {collision.getCollideAxisX(left, right), collision.getCollideAxisX(left, right) == (char*)"left" ? left : right};
@@ -328,10 +330,11 @@ class Player: public Entity {
                     CollisionInfo final = {xInfo.overlap < yInfo.overlap ? xInfo.side : yInfo.side, xInfo.overlap < yInfo.overlap ? xInfo.overlap : yInfo.overlap};
                     // printf("x: %f\n", xInfo.overlap);
                     // printf("y: %f\n", yInfo.overlap);
+                    // printf("enemy: %f, myy: %f\n", currentEnemy.hitbox.position_y, position_y);
 
                     if(final.side == (char*)"bottom") {
                         // printf("bottom\n");
-                        // enemyFactory -> factoryEnemies[i].active = false;
+                        enemyFactory -> factoryEnemies[i].active = false;
                     }
                     if(final.side == (char*)"right") {
                         // printf("right\n");
@@ -427,7 +430,7 @@ class Player: public Entity {
             checkCollision(hitbox.position_x, hitbox.position_y, hitbox.width, hitbox.height);
             hitbox.updateAxis(playerX, playerY);
             attackHitbox.updateAxis(playerX, playerY);
-            // checkEnemyCollision(hitbox.position_x, hitbox.position_y, hitbox.width, hitbox.height);
+            checkEnemyCollision(hitbox.position_x, hitbox.position_y, hitbox.width, hitbox.height);
         }
 
         void resetModel() {

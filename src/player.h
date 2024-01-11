@@ -309,6 +309,38 @@ class Player: public Entity {
             
         }
 
+        void checkEnemyCollisionV2(float position_x, float position_y, float width, float height, EnemyFactory* gameEnemyFactory) {
+            for(int i = 0; i < sizeof(gameEnemyFactory -> factoryEnemies) / sizeof(gameEnemyFactory -> factoryEnemies[0]); ++i) {
+                EnemyFactory::EnemyData currentEnemy = gameEnemyFactory -> factoryEnemies[i];
+
+                if(collision.didCollideBest(
+                    position_x, position_y, width, height, 
+                    currentEnemy.hitbox.position_x, currentEnemy.hitbox.position_y, currentEnemy.hitbox.width, currentEnemy.hitbox.height
+                )) {
+                    // printf("STRIKE\n");
+                    float bottom = (float)abs(position_y - (currentEnemy.hitbox.position_y + currentEnemy.hitbox.height));
+                    float top = (float)abs((position_y + height) - currentEnemy.hitbox.position_y);
+
+                    float left = (float)abs(position_x - (currentEnemy.hitbox.position_x + currentEnemy.hitbox.width));
+                    float right = (float)abs((position_x + width) - currentEnemy.hitbox.position_x);
+
+                    CollisionInfo xInfo = {collision.getCollideAxisX(left, right), collision.getCollideAxisX(left, right) == (char*)"left" ? left : right};
+                    CollisionInfo yInfo = {collision.getCollideAxisY(bottom, top), collision.getCollideAxisY(bottom, top) == (char*)"bottom" ? bottom : top};
+
+                    CollisionInfo final = {xInfo.overlap < yInfo.overlap ? xInfo.side : yInfo.side, xInfo.overlap < yInfo.overlap ? xInfo.overlap : yInfo.overlap};
+
+                    if(final.side == (char*)"bottom") {
+                        // printf("bottom\n");
+                        gameEnemyFactory -> factoryEnemies[i].active = false;
+                    }
+                    if(final.side == (char*)"right") {
+                        // printf("right\n");
+                        // gameEnemyFactory -> factoryEnemies[i].active = false;
+                    }
+                }
+            }
+        }
+
         void checkEnemyCollision(float position_x, float position_y, float width, float height) {
             for(int i = 0; i < sizeof(enemyFactory -> factoryEnemies) / sizeof(enemyFactory -> factoryEnemies[0]); ++i) {
                 EnemyFactory::EnemyData currentEnemy = enemyFactory -> factoryEnemies[i];
@@ -430,7 +462,7 @@ class Player: public Entity {
             checkCollision(hitbox.position_x, hitbox.position_y, hitbox.width, hitbox.height);
             hitbox.updateAxis(playerX, playerY);
             attackHitbox.updateAxis(playerX, playerY);
-            checkEnemyCollision(hitbox.position_x, hitbox.position_y, hitbox.width, hitbox.height);
+            // checkEnemyCollision(hitbox.position_x, hitbox.position_y, hitbox.width, hitbox.height);
         }
 
         void resetModel() {

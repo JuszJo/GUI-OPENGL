@@ -119,7 +119,7 @@ int main() {
     EnemyFactory enemyFactory((char*)"src\\assets\\enemy.png", 0.0f, 0.0f, 34.0f * 2.0f, 28.0f * 2.0f);
     enemyFactory.addEnemy(400.0f, 500.0f);
 
-    player.enemyFactory = &enemyFactory;
+    // player.enemyFactory = &enemyFactory;
     // enemyFactory.addEnemy(200.0f, 200.0f);
 
     glm::mat4 projection = glm::mat4(1.0f);
@@ -192,6 +192,12 @@ int main() {
                 // enemyFactory.factoryEnemies[0].hitbox.render(&cShader, projection, view);
                 // player.attackHitbox.render(&cShader, projection, view);
                 // player.collision.render(&cShader, projection, view);
+
+                player.checkEnemyCollisionV2(
+                    player.hitbox.position_x, player.hitbox.position_y, 
+                    player.hitbox.width, player.hitbox.height, 
+                    &enemyFactory
+                );
             }
         }
 

@@ -316,7 +316,7 @@ class Player: public Entity {
                 if(collision.didCollideBest(
                     position_x, position_y, width, height, 
                     currentEnemy.hitbox.position_x, currentEnemy.hitbox.position_y, currentEnemy.hitbox.width, currentEnemy.hitbox.height
-                )) {
+                ) && currentEnemy.active) {
                     // printf("STRIKE\n");
                     float bottom = (float)abs(position_y - (currentEnemy.hitbox.position_y + currentEnemy.hitbox.height));
                     float top = (float)abs((position_y + height) - currentEnemy.hitbox.position_y);
@@ -332,6 +332,8 @@ class Player: public Entity {
                     if(final.side == (char*)"bottom") {
                         // printf("bottom\n");
                         gameEnemyFactory -> factoryEnemies[i].active = false;
+                        canJump = true;
+                        jump();
                     }
                     if(final.side == (char*)"right") {
                         // printf("right\n");
@@ -348,7 +350,7 @@ class Player: public Entity {
                 if(collision.didCollideBest(
                     position_x, position_y, width, height, 
                     currentEnemy.hitbox.position_x, currentEnemy.hitbox.position_y, currentEnemy.hitbox.width, currentEnemy.hitbox.height
-                )) {
+                ) && currentEnemy.active) {
                     // printf("STRIKE\n");
                     float bottom = (float)abs(position_y - (currentEnemy.hitbox.position_y + currentEnemy.hitbox.height));
                     float top = (float)abs((position_y + height) - currentEnemy.hitbox.position_y);

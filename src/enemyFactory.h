@@ -19,8 +19,11 @@ class EnemyFactory: public EntityV2 {
             Animation animation;
         };
 
-        EnemyData factoryEnemies[2];
+        EnemyData factoryEnemies[100];
         int currentEnemyIndex = 0;
+
+        int spawnBuffer = 200;
+        int elapsedFrames = 0;
 
         Gravity gravity;
 
@@ -80,7 +83,7 @@ class EnemyFactory: public EntityV2 {
         }
 
         void addEnemy(float position_x, float position_y) {
-            if(currentEnemyIndex > 1) {
+            if(currentEnemyIndex > 99) {
                 return;
             }
             EnemyData enemy;
@@ -170,6 +173,14 @@ class EnemyFactory: public EntityV2 {
         }
 
         void update() {
+            if(elapsedFrames % spawnBuffer == 0) {
+                // addEnemy(300.0f, 500.0f);
+
+                // printf("HELLO\n");
+
+                elapsedFrames = 1;
+            }
+
             // std::cout << sin(glm::radians(sinNumber)) * 5.0f << std::endl;
 
             float timeTest = sin(glm::radians(sinNumber)) * 5.0f;
@@ -198,6 +209,7 @@ class EnemyFactory: public EntityV2 {
                 }
             }
             ++sinNumber;
+            ++elapsedFrames;
         }
 
         void render(Shader* shader, glm::mat4 projection, glm::mat4 view) {
